@@ -5,6 +5,9 @@ using UnityEngine;
 [RequireComponent(typeof(MeshFilter))]
 public class TriangleGridTest : MonoBehaviour
 {
+    [SerializeField] bool addUnderneath = true;
+
+
 
     enum Side
     {
@@ -21,7 +24,7 @@ public class TriangleGridTest : MonoBehaviour
 
     Vector3 worldPosRaw;
     Vector3Int worldPosRefined;
-    Vector3 worldPosRefinedEquilateral;
+
 
     private void Awake()
     {
@@ -34,13 +37,13 @@ public class TriangleGridTest : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        QuadTriGrid();
+        UserInput();
     }
 
 
-  
 
-    private void QuadTriGrid()
+
+    private void UserInput()
     {
         if (Input.GetKeyDown(KeyCode.Mouse0))
         {
@@ -50,6 +53,11 @@ public class TriangleGridTest : MonoBehaviour
             Side side = GetSide(worldPosRaw, vertices);
             Vector3Int triplet = GetTriplet(side, vertices);
             vertexList.AddTriplet(triplet);
+
+            AddUnderneath(vertices, side);
+
+
+
             GenerateMesh();
         }
         else if (Input.GetKeyDown(KeyCode.Mouse1))
@@ -63,6 +71,7 @@ public class TriangleGridTest : MonoBehaviour
             GenerateMesh();
         }
     }
+
 
     private void GenerateMesh()
     {
@@ -78,6 +87,7 @@ public class TriangleGridTest : MonoBehaviour
 
         mesh.triangles = triangles;
     }
+
 
     private void GetWorldPositions()
     {
@@ -109,9 +119,8 @@ public class TriangleGridTest : MonoBehaviour
         {
             z += 0.5f;
         }
-
-        worldPosRefinedEquilateral = new Vector3(x, y, z);
     }
+
 
     private Vector3[] GetVertices()
     {
@@ -125,32 +134,63 @@ public class TriangleGridTest : MonoBehaviour
         return vertices;
     }
 
-
-    private Vector3[] GetVerticesEquilateralTris(Vector3 pos)
+    private void AddUnderneath(Vector3[] topVertices, Side side)
     {
-        float triHeight = 0.86603f;
-        float halfHeight = triHeight / 2;
-        float triWidth = 1f;
-        float halfWidth = triWidth / 2;
-        Vector3[] vertices = new Vector3[3];
-
-        // to do: you could multiply triheight and triwidth by an int (-1/+1) depending on if it is upside down or not.
-        if ((pos.x + pos.y) % 2 == 0)
+        Vector3[] vertices = new Vector3[4];
+        switch (side)
         {
-            vertices[0] = pos + new Vector3(0, 0, halfHeight);
-            vertices[1] = pos + new Vector3(+halfWidth, 0, -halfWidth);
-            vertices[2] = pos + new Vector3(-halfWidth, 0, -halfWidth);
-        }
-        else
-        {
-            vertices[0] = pos + new Vector3(0, 0, -halfHeight);
-            vertices[1] = pos + new Vector3(-halfWidth, 0, halfWidth);
-            vertices[2] = pos + new Vector3(halfWidth, 0, halfWidth);
+            case Side.Top:
+                vertices[0] = topVertices[1];
+                vertices[1] = topVertices[3];
+                vertices[2] = topVertices[4];
+                break;
+            case Side.Bottom:
+                vertices[0] = topVertices[0];
+                vertices[1] = topVertices[4];
+                vertices[2] = topVertices[2];
+                break;
+            case Side.Left:
+                vertices[0] = topVertices[1];
+                vertices[1] = topVertices[4];
+                vertices[2] = topVertices[0];
+                break;
+            case Side.Right:
+                vertices[0] = topVertices[4];
+                vertices[1] = topVertices[3];
+                vertices[2] = topVertices[2];
+                break;
+            default:
+                break;
         }
 
+        
 
-        return vertices;
+        vertices[3].x = (vertices[0].x + vertices[1].x + vertices[2].x) / 3;
+        vertices[3].z = (vertices[0].z + vertices[1].z + vertices[2].z) / 3;
+        vertices[3].y = -0.6f;
+                                     
+        Vector3Int triplet1 = Vector3Int.zero;
+        Vector3Int triplet2 = Vector3Int.zero;
+        Vector3Int triplet3 = Vector3Int.zero;
+
+        triplet1.x = vertexList.AddVertex(vertices[1]);
+        triplet1.y = vertexList.AddVertex(vertices[0]);
+        triplet1.z = vertexList.AddVertex(vertices[3]);
+        vertexList.AddTriplet(triplet1);
+
+        triplet2.x = vertexList.AddVertex(vertices[2]);
+        triplet2.y = vertexList.AddVertex(vertices[1]);
+        triplet2.z = vertexList.AddVertex(vertices[3]);
+        vertexList.AddTriplet(triplet2);
+
+        triplet3.x = vertexList.AddVertex(vertices[0]);
+        triplet3.y = vertexList.AddVertex(vertices[2]);
+        triplet3.z = vertexList.AddVertex(vertices[3]);
+        vertexList.AddTriplet(triplet3);
     }
+
+
+
 
 
     private Vector3Int GetTriplet(Side side, Vector3[] vertices)
@@ -217,6 +257,7 @@ public class TriangleGridTest : MonoBehaviour
             }
         }
     }
+
 
     /* A utility function to calculate area of triangle
    formed by (x1, y1) (x2, y2) and (x3, y3) */
