@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(MeshFilter))]
-public class TriangleClickTest : MonoBehaviour
+public class TriangleGridTest : MonoBehaviour
 {
 
     enum Side
     {
-        Top, 
+        Top,
         Bottom,
         Left,
         Right,
@@ -34,34 +34,11 @@ public class TriangleClickTest : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-       // HalfSquareGrid();
         QuadTriGrid();
     }
 
 
-    private void HalfSquareGrid()
-    {
-        if (Input.GetKeyDown(KeyCode.Mouse0))
-        {
-            GetWorldPositions();
-
-            Vector3[] vertices = GetVerticesRightAngleTris();
-            bool inBottomTri = isInside(vertices[0].x, vertices[0].z, vertices[1].x, vertices[1].z, vertices[2].x, vertices[2].z, worldPosRaw.x, worldPosRaw.z);
-            Vector3Int triplet = GetTriplet(inBottomTri, vertices);
-            vertexList.AddTriplet(triplet);
-            GenerateMesh();
-        }
-        else if (Input.GetKeyDown(KeyCode.Mouse1))
-        {
-            GetWorldPositions();
-
-            Vector3[] vertices = GetVerticesRightAngleTris();
-            bool inBottomTri = isInside(vertices[0].x, vertices[0].z, vertices[1].x, vertices[1].z, vertices[2].x, vertices[2].z, worldPosRaw.x, worldPosRaw.z);
-            Vector3Int triplet = GetTriplet(inBottomTri, vertices);
-            vertexList.RemoveTriplet(triplet);
-            GenerateMesh();
-        }
-    }
+  
 
     private void QuadTriGrid()
     {
@@ -69,9 +46,9 @@ public class TriangleClickTest : MonoBehaviour
         {
             GetWorldPositions();
 
-            Vector3[] vertices = GetVerticesRightAngleTris();
-            bool inBottomTri = isInside(vertices[0].x, vertices[0].z, vertices[1].x, vertices[1].z, vertices[2].x, vertices[2].z, worldPosRaw.x, worldPosRaw.z);
-            Vector3Int triplet = GetTriplet(inBottomTri, vertices);
+            Vector3[] vertices = GetVertices();
+            Side side = GetSide(worldPosRaw, vertices);
+            Vector3Int triplet = GetTriplet(side, vertices);
             vertexList.AddTriplet(triplet);
             GenerateMesh();
         }
@@ -79,9 +56,9 @@ public class TriangleClickTest : MonoBehaviour
         {
             GetWorldPositions();
 
-            Vector3[] vertices = GetVerticesRightAngleTris();
-            bool inBottomTri = isInside(vertices[0].x, vertices[0].z, vertices[1].x, vertices[1].z, vertices[2].x, vertices[2].z, worldPosRaw.x, worldPosRaw.z);
-            Vector3Int triplet = GetTriplet(inBottomTri, vertices);
+            Vector3[] vertices = GetVertices();
+            Side side = GetSide(worldPosRaw, vertices);
+            Vector3Int triplet = GetTriplet(side, vertices);
             vertexList.RemoveTriplet(triplet);
             GenerateMesh();
         }
@@ -136,13 +113,14 @@ public class TriangleClickTest : MonoBehaviour
         worldPosRefinedEquilateral = new Vector3(x, y, z);
     }
 
-    private Vector3[] GetVerticesRightAngleTris()
+    private Vector3[] GetVertices()
     {
-        Vector3[] vertices = new Vector3[4];
+        Vector3[] vertices = new Vector3[5];
         vertices[0] = worldPosRefined;
         vertices[1] = worldPosRefined + new Vector3(0, 0, 1);
         vertices[2] = worldPosRefined + new Vector3(1, 0, 0);
         vertices[3] = worldPosRefined + new Vector3(1, 0, 1);
+        vertices[4] = worldPosRefined + new Vector3(0.5f, 0, 0.5f);
 
         return vertices;
     }
@@ -175,24 +153,69 @@ public class TriangleClickTest : MonoBehaviour
     }
 
 
-    private Vector3Int GetTriplet(bool inBottomTri, Vector3[] vertices)
+    private Vector3Int GetTriplet(Side side, Vector3[] vertices)
     {
         Vector3Int triplet = Vector3Int.zero;
-
-        if (inBottomTri)
+        switch (side)
         {
-            triplet.x = vertexList.AddVertex(vertices[0]);
-            triplet.y = vertexList.AddVertex(vertices[1]);
-            triplet.z = vertexList.AddVertex(vertices[2]);
-        }
-        else
-        {
-            triplet.x = vertexList.AddVertex(vertices[1]);
-            triplet.y = vertexList.AddVertex(vertices[3]);
-            triplet.z = vertexList.AddVertex(vertices[2]);
+            case Side.Top:
+                triplet.x = vertexList.AddVertex(vertices[1]);
+                triplet.y = vertexList.AddVertex(vertices[3]);
+                triplet.z = vertexList.AddVertex(vertices[4]);
+                break;
+            case Side.Bottom:
+                triplet.x = vertexList.AddVertex(vertices[0]);
+                triplet.y = vertexList.AddVertex(vertices[4]);
+                triplet.z = vertexList.AddVertex(vertices[2]);
+                break;
+            case Side.Left:
+                triplet.x = vertexList.AddVertex(vertices[0]);
+                triplet.y = vertexList.AddVertex(vertices[1]);
+                triplet.z = vertexList.AddVertex(vertices[4]);
+                break;
+            case Side.Right:
+                triplet.x = vertexList.AddVertex(vertices[4]);
+                triplet.y = vertexList.AddVertex(vertices[3]);
+                triplet.z = vertexList.AddVertex(vertices[2]);
+                break;
+            default:
+                break;
         }
 
         return triplet;
+    }
+
+
+    private Side GetSide(Vector3 pos, Vector3[] vertices)
+    {
+        bool inBottomTri = isInside(vertices[0].x, vertices[0].z, vertices[1].x, vertices[1].z, vertices[2].x, vertices[2].z, worldPosRaw.x, worldPosRaw.z);
+
+        if (inBottomTri)
+        {
+            inBottomTri = isInside(vertices[0].x, vertices[0].z, vertices[4].x, vertices[4].z, vertices[2].x, vertices[2].z, worldPosRaw.x, worldPosRaw.z);
+
+            if (inBottomTri)
+            {
+                return Side.Bottom;
+            }
+            else
+            {
+                return Side.Left;
+            }
+        }
+        else
+        {
+            inBottomTri = isInside(vertices[4].x, vertices[4].z, vertices[3].x, vertices[3].z, vertices[2].x, vertices[2].z, worldPosRaw.x, worldPosRaw.z);
+
+            if (inBottomTri)
+            {
+                return Side.Right;
+            }
+            else
+            {
+                return Side.Top;
+            }
+        }
     }
 
     /* A utility function to calculate area of triangle

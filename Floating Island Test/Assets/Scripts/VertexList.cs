@@ -10,7 +10,10 @@ public class VertexList : ScriptableObject
     public Vector2[] uvs;
     Dictionary<Vector3, int> vertexCount;
 
-    public int AddVertexPosition(Vector3 newPos)
+
+
+
+    public int AddVertex(Vector3 newPos)
     {
         for (int i = 0; i < vertexPositions.Length; i++)
         {
@@ -35,7 +38,8 @@ public class VertexList : ScriptableObject
         return vertexPositions.Length - 1;
     }
 
-    public void RemoveVertexPosition(Vector3 position)
+
+    public void RemoveVertex(Vector3 position)
     {
         if (vertexCount[position] > 1)
         {
@@ -82,6 +86,7 @@ public class VertexList : ScriptableObject
         triplets[triplets.Length - 1] = newPos;
     }
 
+
     public void RemoveTriplet(Vector3Int triplet)
     {
         Vector3Int[] temp = new Vector3Int[triplets.Length - 1];
@@ -105,10 +110,12 @@ public class VertexList : ScriptableObject
         }
 
         triplets = temp;
-        RemoveVertexPosition(vertexPositions[triplet.x]);
-        RemoveVertexPosition(vertexPositions[triplet.y]);
-        RemoveVertexPosition(vertexPositions[triplet.z]);
+        RemoveVertex(vertexPositions[triplet.x]);
+        RemoveVertex(vertexPositions[triplet.y]);
+        RemoveVertex(vertexPositions[triplet.z]);
     }
+
+
 
     public void Initialise()
     {
