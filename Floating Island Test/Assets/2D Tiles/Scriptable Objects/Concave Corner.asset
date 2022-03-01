@@ -12,7 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e0dbcc9e9af94704f9f99d541388e58d, type: 3}
   m_Name: Concave Corner
   m_EditorClassIdentifier: 
-  sockets: 03000000010000000100000003000000
-  specialConnections: 01000000020000000200000000000000
+  sockets:
+  - number: 3
+    spConnection: 1
+  - number: 1
+    spConnection: 2
+  - number: 1
+    spConnection: 2
+  - number: 3
+    spConnection: 0
   rotationIndex: 0
   prefab: {fileID: 5131004737442045134, guid: b0a256029b1c1c44fa74594a1a066295, type: 3}

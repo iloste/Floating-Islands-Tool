@@ -154,7 +154,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   originalTiles:
   - {fileID: 11400000, guid: fc3ae01396dda704b8aa93072fbea8d2, type: 2}
-  gridSize: {x: 3, y: 3}
+  - {fileID: 11400000, guid: fc29b96668c010d4f8765939bb5c7af8, type: 2}
+  - {fileID: 11400000, guid: 45f5effeaf0a61e4b9aff338a6b8c570, type: 2}
+  - {fileID: 11400000, guid: 404f6558661b3874ca3663d96ed0a553, type: 2}
+  - {fileID: 11400000, guid: ffe0ddb025ecf7240823c6214bb60421, type: 2}
+  gridSize: {x: 15, y: 15}
+  debug: 1
+  randomSeed: 1
 --- !u!4 &81911871
 Transform:
   m_ObjectHideFlags: 0

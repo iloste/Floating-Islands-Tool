@@ -12,7 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e0dbcc9e9af94704f9f99d541388e58d, type: 3}
   m_Name: Grass
   m_EditorClassIdentifier: 
-  sockets: 01000000010000000100000001000000
-  specialConnections: 00000000000000000000000000000000
+  sockets:
+  - number: 1
+    spConnection: 2
+  - number: 1
+    spConnection: 2
+  - number: 1
+    spConnection: 2
+  - number: 1
+    spConnection: 2
   rotationIndex: 0
   prefab: {fileID: 2038405433299850209, guid: 3a29c00947262ae47bff9fc6ce2e963c, type: 3}

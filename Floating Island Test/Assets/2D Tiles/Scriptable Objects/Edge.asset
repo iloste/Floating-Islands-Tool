@@ -12,7 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e0dbcc9e9af94704f9f99d541388e58d, type: 3}
   m_Name: Edge
   m_EditorClassIdentifier: 
-  sockets: 01000000020000000000000002000000
-  specialConnections: 00000000010000000000000000000000
+  sockets:
+  - number: 1
+    spConnection: 2
+  - number: 3
+    spConnection: 0
+  - number: 0
+    spConnection: 2
+  - number: 3
+    spConnection: 1
   rotationIndex: 0
   prefab: {fileID: 7581126908289799145, guid: 4fc9fb3ec12fcd141b64ac9d0078f85b, type: 3}

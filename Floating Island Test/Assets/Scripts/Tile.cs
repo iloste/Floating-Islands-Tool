@@ -11,9 +11,9 @@ public class Tile : ScriptableObject
         Flipped,
         Symmetrical,
     }
+    
 
-    public int[] sockets;
-    public SpecialConnection[] specialConnections;
+    public Connection[] sockets;
     public int rotationIndex;
     public GameObject prefab;
 
@@ -23,8 +23,7 @@ public class Tile : ScriptableObject
 
     public Tile()
     {
-        sockets = new int[4];
-        specialConnections = new SpecialConnection[4];
+        sockets = new Connection[4];
         rotationIndex = 0;
         possibleConnectors = new List<List<Tile>>();
 

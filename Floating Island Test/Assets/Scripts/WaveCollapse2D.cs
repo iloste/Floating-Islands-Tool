@@ -9,10 +9,21 @@ public class WaveCollapse2D : MonoBehaviour
     List<Tile> allTiles;
 
     List<List<List<Tile>>> grid;
-    bool debug = false;
+    [SerializeField] bool debug;
+    [SerializeField] bool randomSeed;
 
     private void Awake()
     {
+        if (!randomSeed)
+        {
+            Random.InitState(0); 
+        }
+        else
+        {
+            Random.InitState(Random.Range(0, 300000));
+
+        }
+
         InitialiseTiles();
         InitialiseGrid();
         DoTheThing();
@@ -81,8 +92,8 @@ public class WaveCollapse2D : MonoBehaviour
                 if (neighbours[i].x != -1 && neighbours[i].y != -1)
                 {
 
-                    List<int> validConnections = GetValidConnections(grid[currentCoords.x][currentCoords.y], i);
-                    List<Tile.SpecialConnection> validSpConnections = GetValidSpecialConnections(grid[currentCoords.x][currentCoords.y], i);
+                    List<Connection> validConnections = GetValidConnections(grid[currentCoords.x][currentCoords.y], i);
+                    //List<Tile.SpecialConnection> validSpConnections = GetValidSpecialConnections(grid[currentCoords.x][currentCoords.y], i);
 
                     List<Tile> possibleNeighbourTiles = grid[neighbours[i].x][neighbours[i].y];
 
@@ -97,7 +108,7 @@ public class WaveCollapse2D : MonoBehaviour
                                 //if (possibleNeighbourTiles[j].sockets[(i + 2) % 4] != validConnections[p] ||
                                 //    possibleNeighbourTiles[j].specialConnections[(i + 2) % 4] != validSpConnections[p])
                                 //if (!CheckSockets(possibleNeighbourTiles[j].sockets[(i + 2) % 4], validConnections[p], possibleNeighbourTiles[j].specialConnections[(i + 2) % 4], validSpConnections[p]))
-                                if (!CheckSockets(possibleNeighbourTiles[j].sockets[(i + 2) % 4], validConnections, possibleNeighbourTiles[j].specialConnections[(i + 2) % 4], validSpConnections))
+                                if (!CheckSocketsMatch(possibleNeighbourTiles[j].sockets[(i + 2) % 4], validConnections))
                                 {
                                     possibleNeighbourTiles.RemoveAt(j);
                                     j--;
@@ -108,7 +119,7 @@ public class WaveCollapse2D : MonoBehaviour
 
                         if (addToStack)
                         {
-                            if (q.Contains(neighbours[i]))
+                            //if (!q.Contains(neighbours[i]))
                             {
                                 q.Enqueue(neighbours[i]);
                             }
@@ -139,19 +150,50 @@ public class WaveCollapse2D : MonoBehaviour
 
         return false;
     }
-    private bool CheckSockets(int a, List<int> b, Tile.SpecialConnection c, List<Tile.SpecialConnection> d)
-    {
 
+    /// <summary>
+    /// returns true if connection a fits anything in list b
+    /// </summary>
+    private bool CheckSocketsMatch(Connection a, List<Connection> b)
+    {
         for (int i = 0; i < b.Count; i++)
         {
-            if (a == b[i])
+            if (a.number == b[i].number)
             {
-                if (c == Tile.SpecialConnection.Symmetrical && d[i] == Tile.SpecialConnection.Symmetrical)
+                if (a.spConnection ==b[i].spConnection)
+                {
+                    return transform;
+                }
+                //if (a.spConnection == Tile.SpecialConnection.Symmetrical && b[i].spConnection == Tile.SpecialConnection.Symmetrical)
+                //{
+                //    return true;
+                //}
+                //else if (a.spConnection == Tile.SpecialConnection.Flipped && b[i].spConnection == Tile.SpecialConnection.None ||
+                //    a.spConnection == Tile.SpecialConnection.None && b[i].spConnection == Tile.SpecialConnection.Flipped)
+                //{
+                //    return true;
+                //}
+            }
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// returns true if connection a fits anything in list b
+    /// </summary>
+    private bool CheckSockets(Connection a, Connection[] b)
+    {
+        for (int i = 0; i < b.Length; i++)
+        {
+            if (a.number == b[i].number)
+            {
+                if (a.spConnection == Tile.SpecialConnection.Symmetrical && b[i].spConnection == Tile.SpecialConnection.Symmetrical)
                 {
                     return true;
                 }
-                else if (c == Tile.SpecialConnection.Flipped && d[i] == Tile.SpecialConnection.None ||
-                    c == Tile.SpecialConnection.None && d[i] == Tile.SpecialConnection.Flipped)
+                else if (a.spConnection == Tile.SpecialConnection.Flipped && b[i].spConnection == Tile.SpecialConnection.None ||
+                    a.spConnection == Tile.SpecialConnection.None && b[i].spConnection == Tile.SpecialConnection.Flipped)
                 {
                     return true;
                 }
@@ -161,17 +203,49 @@ public class WaveCollapse2D : MonoBehaviour
         return false;
     }
 
-    private List<int> GetValidConnections(List<Tile> possibleTiles, int d)
+    private bool CheckSocketsFit(Connection a, Connection b)
     {
-        List<int> validConnections = new List<int>();
+        if (a.number == b.number)
+        {
+            if (a.spConnection == Tile.SpecialConnection.Symmetrical && b.spConnection == Tile.SpecialConnection.Symmetrical)
+            {
+                return true;
+            }
+            else if (a.spConnection == Tile.SpecialConnection.Flipped && b.spConnection == Tile.SpecialConnection.None ||
+                a.spConnection == Tile.SpecialConnection.None && b.spConnection == Tile.SpecialConnection.Flipped)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private List<Connection> GetValidConnections(List<Tile> possibleTiles, int dir)
+    {
+        List<Connection> validConnections = new List<Connection>();
 
         for (int i = 0; i < possibleTiles.Count; i++)
         {
-            for (int j = 0; j < possibleTiles[i].possibleConnectors[d].Count; j++)
+            List<List<Tile>> possibleConnectors = possibleTiles[i].possibleConnectors;
+
+            for (int j = 0; j < possibleConnectors[dir].Count; j++)
             {
-                if (!validConnections.Contains(possibleTiles[i].possibleConnectors[d][j].sockets[(d + 2) % 4]))
+                bool addToList = true;
+
+                for (int p = 0; p < validConnections.Count; p++)
                 {
-                    validConnections.Add(possibleTiles[i].possibleConnectors[d][j].sockets[(d + 2) % 4]);
+                    if (validConnections[p].number == possibleConnectors[dir][j].sockets[(dir + 2) % 4].number &&
+                        validConnections[p].spConnection == possibleConnectors[dir][j].sockets[(dir + 2) % 4].spConnection)
+                    {
+                        addToList = false;
+                        break;
+                    }
+                }
+
+                if (addToList)
+                {
+                    validConnections.Add(possibleConnectors[dir][j].sockets[(dir + 2) % 4]); 
                 }
             }
         }
@@ -179,76 +253,96 @@ public class WaveCollapse2D : MonoBehaviour
         return validConnections;
     }
 
-    private List<Tile.SpecialConnection> GetValidSpecialConnections(List<Tile> possibleTiles, int d)
-    {
-        List<Tile.SpecialConnection> validConnections = new List<Tile.SpecialConnection>();
 
-        for (int i = 0; i < possibleTiles.Count; i++)
-        {
-            for (int j = 0; j < possibleTiles[i].possibleConnectors[d].Count; j++)
-            {
+    //private List<int> GetValidConnections(List<Tile> possibleTiles, int d)
+    //{
+    //    List<int> validConnections = new List<int>();
+    //    List<Tile.SpecialConnection> spConnection = new List<Tile.SpecialConnection>();
 
-                if (possibleTiles[i].possibleConnectors[d][j].specialConnections[(d + 2) % 4] == Tile.SpecialConnection.Symmetrical)
-                {
-                    if (!validConnections.Contains(possibleTiles[i].possibleConnectors[d][j].specialConnections[(d + 2) % 4]))
-                    {
-                        validConnections.Add(possibleTiles[i].possibleConnectors[d][j].specialConnections[(d + 2) % 4]);
-                    }
-                }
-                else if (possibleTiles[i].possibleConnectors[d][j].specialConnections[(d + 2) % 4] == Tile.SpecialConnection.Flipped)
-                {
-                    if (!validConnections.Contains(Tile.SpecialConnection.None))
-                    {
-                        validConnections.Add(Tile.SpecialConnection.None);
-                    }
-                }
-                else if (possibleTiles[i].possibleConnectors[d][j].specialConnections[(d + 2) % 4] == Tile.SpecialConnection.None)
-                {
-                    if (!validConnections.Contains(Tile.SpecialConnection.Flipped))
-                    {
-                        validConnections.Add(Tile.SpecialConnection.Flipped);
-                    }
-                }
+    //    for (int i = 0; i < possibleTiles.Count; i++)
+    //    {
+    //        for (int j = 0; j < possibleTiles[i].possibleConnectors[d].Count; j++)
+    //        {
+    //            if (!validConnections.Contains(possibleTiles[i].possibleConnectors[d][j].sockets[(d + 2) % 4]))
+    //            {
+    //                validConnections.Add(possibleTiles[i].possibleConnectors[d][j].sockets[(d + 2) % 4]);
+    //            }
+    //        }
+    //    }
+
+    //    return validConnections;
+    //}
+
+    //private List<Tile.SpecialConnection> GetValidSpecialConnections(List<Tile> possibleTiles, int d)
+    //{
+    //    List<Tile.SpecialConnection> validConnections = new List<Tile.SpecialConnection>();
+
+    //    for (int i = 0; i < possibleTiles.Count; i++)
+    //    {
+    //        for (int j = 0; j < possibleTiles[i].possibleConnectors[d].Count; j++)
+    //        {
+
+    //            if (possibleTiles[i].possibleConnectors[d][j].specialConnections[(d + 2) % 4] == Tile.SpecialConnection.Symmetrical)
+    //            {
+    //                if (!validConnections.Contains(possibleTiles[i].possibleConnectors[d][j].specialConnections[(d + 2) % 4]))
+    //                {
+    //                    validConnections.Add(possibleTiles[i].possibleConnectors[d][j].specialConnections[(d + 2) % 4]);
+    //                }
+    //            }
+    //            else if (possibleTiles[i].possibleConnectors[d][j].specialConnections[(d + 2) % 4] == Tile.SpecialConnection.Flipped)
+    //            {
+    //                if (!validConnections.Contains(Tile.SpecialConnection.None))
+    //                {
+    //                    validConnections.Add(Tile.SpecialConnection.None);
+    //                }
+    //            }
+    //            else if (possibleTiles[i].possibleConnectors[d][j].specialConnections[(d + 2) % 4] == Tile.SpecialConnection.None)
+    //            {
+    //                if (!validConnections.Contains(Tile.SpecialConnection.Flipped))
+    //                {
+    //                    validConnections.Add(Tile.SpecialConnection.Flipped);
+    //                }
+    //            }
 
 
-            }
-        }
+    //        }
+    //    }
 
-        return validConnections;
-    }
+    //    return validConnections;
+    //}
 
 
-    /// <summary>
-    /// List2 is modified and returned if needed
-    /// </summary>
-    /// <param name="list1"></param>
-    /// <param name="list2"></param>
-    /// <returns></returns>
-    private List<Tile> CompareConnections(List<Tile> list1, int direction, List<Tile> list2)
-    {
-        bool match = false;
+    ///// <summary>
+    ///// List2 is modified and returned if needed
+    ///// </summary>
+    ///// <param name="list1"></param>
+    ///// <param name="list2"></param>
+    ///// <returns></returns>
+    //private List<Tile> CompareConnections(List<Tile> list1, int direction, List<Tile> list2)
+    //{
+    //    bool match = false;
 
-        for (int i = 0; i < list2.Count; i++)
-        {
-            for (int j = 0; j < list1.Count; j++)
-            {
-                if (list2[i].sockets[(i + 2) % 4] == list1[j].sockets[i] &&
-                    list2[i].specialConnections[(i + 2) % 4] == list1[j].specialConnections[i])
-                {
-                    match = true;
-                    break;
-                }
-            }
+    //    for (int i = 0; i < list2.Count; i++)
+    //    {
+    //        for (int j = 0; j < list1.Count; j++)
+    //        {
+    //            if (list2[i].sockets[(i + 2) % 4] == list1[j].sockets[i] &&
+    //                list2[i].specialConnections[(i + 2) % 4] == list1[j].specialConnections[i])
+    //            {
+    //                match = true;
+    //                break;
+    //            }
+    //        }
 
-            if (!match)
-            {
-                list2.RemoveAt(i);
-                i--;
-            }
-        }
+    //        if (!match)
+    //        {
+    //            list2.RemoveAt(i);
+    //            i--;
+    //        }
+    //    }
 
-        return list2;
-    }
+    //    return list2;
+    //}
 
     private Vector2Int[] GetNeighbourCoords(Vector2Int coords)
     {
@@ -299,7 +393,7 @@ public class WaveCollapse2D : MonoBehaviour
         int random = Random.Range(0, list.Count);
         if (debug)
         {
-            random = 2;
+            random = 0;
             debug = false;
         }
         Tile chosen = list[random];
@@ -401,30 +495,18 @@ public class WaveCollapse2D : MonoBehaviour
                 newTile.sockets[1] = tile.sockets[0];
                 newTile.sockets[2] = tile.sockets[1];
                 newTile.sockets[3] = tile.sockets[2];
-                newTile.specialConnections[0] = tile.specialConnections[3];
-                newTile.specialConnections[1] = tile.specialConnections[0];
-                newTile.specialConnections[2] = tile.specialConnections[1];
-                newTile.specialConnections[3] = tile.specialConnections[2];
                 break;
             case 2:
                 newTile.sockets[0] = tile.sockets[2];
                 newTile.sockets[1] = tile.sockets[3];
                 newTile.sockets[2] = tile.sockets[0];
                 newTile.sockets[3] = tile.sockets[1];
-                newTile.specialConnections[0] = tile.specialConnections[2];
-                newTile.specialConnections[1] = tile.specialConnections[3];
-                newTile.specialConnections[2] = tile.specialConnections[0];
-                newTile.specialConnections[3] = tile.specialConnections[1];
                 break;
             case 3:
                 newTile.sockets[0] = tile.sockets[1];
                 newTile.sockets[1] = tile.sockets[2];
                 newTile.sockets[2] = tile.sockets[3];
                 newTile.sockets[3] = tile.sockets[0];
-                newTile.specialConnections[0] = tile.specialConnections[1];
-                newTile.specialConnections[1] = tile.specialConnections[2];
-                newTile.specialConnections[2] = tile.specialConnections[3];
-                newTile.specialConnections[3] = tile.specialConnections[0];
                 break;
             default:
                 Debug.LogError("Invalid rotation Index");
@@ -444,7 +526,7 @@ public class WaveCollapse2D : MonoBehaviour
             {
                 // check if each tile matches
                 //if (tile.sockets[i] == allTiles[j].sockets[(i + 2) % 4] && tile.specialConnections[i] == allTiles[j].specialConnections[(i + 2) % 4])
-                if (CheckSockets(tile.sockets[i], allTiles[j].sockets[(i + 2) % 4], tile.specialConnections[i], allTiles[j].specialConnections[(i + 2) % 4]))
+                if (CheckSocketsFit(tile.sockets[i], allTiles[j].sockets[(i + 2) % 4]))
                 {
                     tile.possibleConnectors[i].Add(allTiles[j]);
                 }
