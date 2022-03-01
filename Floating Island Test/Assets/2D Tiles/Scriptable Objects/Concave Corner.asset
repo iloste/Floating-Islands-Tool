@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e0dbcc9e9af94704f9f99d541388e58d, type: 3}
+  m_Name: Concave Corner
+  m_EditorClassIdentifier: 
+  sockets: 03000000010000000100000003000000
+  specialConnections: 01000000020000000200000000000000
+  rotationIndex: 0
+  prefab: {fileID: 5131004737442045134, guid: b0a256029b1c1c44fa74594a1a066295, type: 3}
