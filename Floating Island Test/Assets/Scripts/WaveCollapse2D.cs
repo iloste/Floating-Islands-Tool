@@ -8,9 +8,11 @@ public class WaveCollapse2D : MonoBehaviour
     [SerializeField] Vector2Int gridSize;
     List<Tile> allTiles;
 
-    List<List<List<Tile>>> grid;
+    List<List<Cell>> grid;
     [SerializeField] bool debug;
     [SerializeField] bool randomSeed;
+
+    int oppositeDirModifier = 2;
 
     private void Awake()
     {
@@ -26,7 +28,7 @@ public class WaveCollapse2D : MonoBehaviour
 
         InitialiseTiles();
         InitialiseGrid();
-        DoTheThing();
+        GenerateTerrain();
         Display();
     }
 
@@ -112,7 +114,7 @@ public class WaveCollapse2D : MonoBehaviour
         {
             for (int j = 0; j < availableTiles.Count; j++)
             {
-                if (CheckSocketsFit(tile.sockets[i], availableTiles[j].sockets[(i + 2) % socketsCount]))
+                if (tile.sockets[i].FitsInto(availableTiles[j].sockets[(i + oppositeDirModifier) % socketsCount]))
                 {
                     tile.possibleConnectors[i].Add(availableTiles[j]);
                 }
@@ -121,26 +123,29 @@ public class WaveCollapse2D : MonoBehaviour
     }
 
 
+    /// <summary>
+    /// Creates and populates the grid with cell tiles
+    /// </summary>
     private void InitialiseGrid()
     {
-        grid = new List<List<List<Tile>>>();
+        grid = new List<List<Cell>>();
 
         for (int col = 0; col < gridSize.x; col++)
         {
-            grid.Add(new List<List<Tile>>());
+            grid.Add(new List<Cell>());
 
             for (int row = 0; row < gridSize.y; row++)
             {
-                grid[col].Add(new List<Tile>());
-                grid[col][row] = new List<Tile>(allTiles);
+                grid[col].Add(new Cell(new List<Tile>(allTiles), new Vector2(col, row)));
             }
         }
     }
 
     #endregion
 
-    #region Do The Thing
-    private void DoTheThing()
+    #region Generate Terrain
+
+    private void GenerateTerrain()
     {
         while (!WaveFunctionCollapsed())
         {
@@ -148,154 +153,151 @@ public class WaveCollapse2D : MonoBehaviour
         }
     }
 
+
+    /// <summary>
+    /// returns true if all cells in the grid have only 1 possible tile. Else returns false.
+    /// </summary>
+    /// <returns></returns>
+    private bool WaveFunctionCollapsed()
+    {
+        for (int row = 0; row < grid.Count; row++)
+        {
+            for (int col = 0; col < grid[row].Count; col++)
+            {
+                if (grid[col][row].possibleTiles.Count > 1)
+                {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+
+    /// <summary>
+    /// Iterates through the grid, collapsing the cells with the lowest enttopy, then handles the changes that causes in neighbouring cells
+    /// </summary>
     private void Iterate()
     {
         Vector2Int lowestEntropy = GetLowestEntropy();
-        grid[lowestEntropy.x][lowestEntropy.y] = CollapseList(grid[lowestEntropy.x][lowestEntropy.y]);
+        CollapsePossibleTiles(grid[lowestEntropy.x][lowestEntropy.y]);
         Propagate(lowestEntropy);
     }
 
 
+    /// <summary>
+    /// Returns the coordinates of the cell with the fewest possible tiles above 1.
+    /// </summary>
+    private Vector2Int GetLowestEntropy()
+    {
+        Vector2Int lowestIndex = Vector2Int.zero;
+
+        for (int row = 0; row < grid.Count; row++)
+        {
+            for (int col = 0; col < grid[row].Count; col++)
+            {
+                if (grid[col][row].possibleTiles.Count > 1)
+                {
+                    // todo return coords if the value is two else do this? That might be quicker because 2 is the lowest value needed for returning.
+                    if (grid[col][row].possibleTiles.Count < grid[lowestIndex.x][lowestIndex.y].possibleTiles.Count || grid[lowestIndex.x][lowestIndex.y].possibleTiles.Count <= 1)
+                    {
+                        lowestIndex.x = col;
+                        lowestIndex.y = row;
+                    }
+                }
+            }
+        }
+
+        return lowestIndex;
+    }
+
+
+    /// <summary>
+    /// Picks one of it's possible tiles to be the set tile.
+    /// </summary>
+    private void CollapsePossibleTiles(Cell cell)
+    {
+        int random = Random.Range(0, cell.possibleTiles.Count);
+
+        // To do: Remove debug when not needed
+        if (debug)
+        {
+            random = 0;
+            debug = false;
+        }
+
+        Tile chosen = cell.possibleTiles[random];
+        cell.possibleTiles = new List<Tile>();
+        cell.possibleTiles.Add(chosen);
+    }
+
+
+    /// <summary>
+    /// Applies a ripple effect to the rest of the grid based on the changes made at the given coords.
+    /// </summary>
+    /// <param name="coords">The coordinates of the cell that has had changes made</param>
     private void Propagate(Vector2Int coords)
     {
         Queue<Vector2Int> q = new Queue<Vector2Int>();
         q.Enqueue(coords);
 
+        //while still cells to examine
         while (q.Count > 0)
         {
+            // take the next cell
             Vector2Int currentCoords = q.Dequeue();
-            Vector2Int[] neighbours = GetNeighbourCoords(currentCoords);
+            Cell currentCell = grid[currentCoords.x][currentCoords.y];
+            Vector2Int[] neighboursCoords = GetNeighbourCoords(currentCoords);
+            Cell[] neighbours = GetCells(neighboursCoords);
 
-            for (int i = 0; i < neighbours.Length; i++)
+            // for each neighbour/direction
+            for (int i = 0; i < neighboursCoords.Length; i++)
             {
-                if (neighbours[i].x != -1 && neighbours[i].y != -1)
+                if (neighbours[i] != null)
                 {
+                    // possible connections and neighbours in the given direction
+                    List<Connection> validConnections = currentCell.GetValidConnections(i);
 
-                    List<Connection> validConnections = GetValidConnections(grid[currentCoords.x][currentCoords.y], i);
-                    //List<Tile.SpecialConnection> validSpConnections = GetValidSpecialConnections(grid[currentCoords.x][currentCoords.y], i);
-
-                    List<Tile> possibleNeighbourTiles = grid[neighbours[i].x][neighbours[i].y];
-
-                    if (possibleNeighbourTiles.Count > 1)
+                    if (!neighbours[i].Collapsed())
                     {
+                        List<Tile> possibleNeighbourTiles = neighbours[i].possibleTiles;
                         bool addToStack = false;
 
                         for (int j = 0; j < possibleNeighbourTiles.Count; j++)
                         {
-                            //    for (int p = 0; p < validConnections.Count; p++)
+                            Connection[] possibleSockets = possibleNeighbourTiles[j].sockets;
+                            int index = (i + oppositeDirModifier) % possibleSockets.Length;
+
+                            if (!CheckSocketsMatch(possibleSockets[index], validConnections))
                             {
-                                //if (possibleNeighbourTiles[j].sockets[(i + 2) % 4] != validConnections[p] ||
-                                //    possibleNeighbourTiles[j].specialConnections[(i + 2) % 4] != validSpConnections[p])
-                                //if (!CheckSockets(possibleNeighbourTiles[j].sockets[(i + 2) % 4], validConnections[p], possibleNeighbourTiles[j].specialConnections[(i + 2) % 4], validSpConnections[p]))
-                                if (!CheckSocketsMatch(possibleNeighbourTiles[j].sockets[(i + 2) % 4], validConnections))
-                                {
-                                    possibleNeighbourTiles.RemoveAt(j);
-                                    j--;
-                                    addToStack = true;
-                                }
+                                possibleNeighbourTiles.RemoveAt(j);
+                                j--;
+                                addToStack = true;
                             }
                         }
 
                         if (addToStack)
                         {
-                            //if (!q.Contains(neighbours[i]))
-                            {
-                                q.Enqueue(neighbours[i]);
-                            }
-
-                            grid[neighbours[i].x][neighbours[i].y] = possibleNeighbourTiles;
+                            q.Enqueue(neighboursCoords[i]);
+                            grid[neighboursCoords[i].x][neighboursCoords[i].y].possibleTiles = possibleNeighbourTiles;
                         }
                     }
                 }
             }
         }
-
     }
 
 
     /// <summary>
-    /// returns true if connection a fits anything in list b
+    /// returns the coordinates for the N/E/S/W neighbours.
+    /// If the neighbour is invalid, returns Vector2(-1, -1)
     /// </summary>
-    private bool CheckSocketsMatch(Connection a, List<Connection> b)
-    {
-        for (int i = 0; i < b.Count; i++)
-        {
-            if (a.number == b[i].number)
-            {
-                if (a.spConnection == b[i].spConnection)
-                {
-                    return transform;
-                }
-                //if (a.spConnection == Tile.SpecialConnection.Symmetrical && b[i].spConnection == Tile.SpecialConnection.Symmetrical)
-                //{
-                //    return true;
-                //}
-                //else if (a.spConnection == Tile.SpecialConnection.Flipped && b[i].spConnection == Tile.SpecialConnection.None ||
-                //    a.spConnection == Tile.SpecialConnection.None && b[i].spConnection == Tile.SpecialConnection.Flipped)
-                //{
-                //    return true;
-                //}
-            }
-        }
-
-        return false;
-    }
-
-    private bool CheckSocketsFit(Connection a, Connection b)
-    {
-        if (a.number == b.number)
-        {
-            if (a.spConnection == Tile.SpecialConnection.Symmetrical && b.spConnection == Tile.SpecialConnection.Symmetrical)
-            {
-                return true;
-            }
-            else if (a.spConnection == Tile.SpecialConnection.Flipped && b.spConnection == Tile.SpecialConnection.None ||
-                a.spConnection == Tile.SpecialConnection.None && b.spConnection == Tile.SpecialConnection.Flipped)
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    private List<Connection> GetValidConnections(List<Tile> possibleTiles, int dir)
-    {
-        List<Connection> validConnections = new List<Connection>();
-
-        for (int i = 0; i < possibleTiles.Count; i++)
-        {
-            List<List<Tile>> possibleConnectors = possibleTiles[i].possibleConnectors;
-
-            for (int j = 0; j < possibleConnectors[dir].Count; j++)
-            {
-                bool addToList = true;
-
-                for (int p = 0; p < validConnections.Count; p++)
-                {
-                    if (validConnections[p].number == possibleConnectors[dir][j].sockets[(dir + 2) % 4].number &&
-                        validConnections[p].spConnection == possibleConnectors[dir][j].sockets[(dir + 2) % 4].spConnection)
-                    {
-                        addToList = false;
-                        break;
-                    }
-                }
-
-                if (addToList)
-                {
-                    validConnections.Add(possibleConnectors[dir][j].sockets[(dir + 2) % 4]);
-                }
-            }
-        }
-
-        return validConnections;
-    }
-
-
     private Vector2Int[] GetNeighbourCoords(Vector2Int coords)
     {
-
         Vector2Int[] Neighbours = new Vector2Int[4];
+
+        #region Get the coodinates
 
         if (coords.y + 1 < grid.Count)
         {
@@ -333,60 +335,97 @@ public class WaveCollapse2D : MonoBehaviour
             Neighbours[3] = new Vector2Int(-1, -1);
         }
 
+        #endregion
+
         return Neighbours;
     }
 
-    private List<Tile> CollapseList(List<Tile> list)
+    private Cell[] GetCells(Vector2Int[] coords)
     {
-        int random = Random.Range(0, list.Count);
-        if (debug)
+        Cell[] cells = new Cell[coords.Length];
+
+        for (int i = 0; i < coords.Length; i++)
         {
-            random = 0;
-            debug = false;
+            if (coords[i].x >= 0)
+            {
+                cells[i] = grid[coords[i].x][coords[i].y];
+            }
         }
-        Tile chosen = list[random];
-        list = new List<Tile>();
-        list.Add(chosen);
-        return list;
+
+        return cells;
     }
 
-    private Vector2Int GetLowestEntropy()
-    {
-        Vector2Int lowestIndex = Vector2Int.zero;
 
-        for (int row = 0; row < grid.Count; row++)
+    /// <summary>
+    /// returns true if connection a fits anything in list b
+    /// </summary>
+    private bool CheckSocketsMatch(Connection a, List<Connection> b)
+    {
+        for (int i = 0; i < b.Count; i++)
         {
-            for (int col = 0; col < grid[row].Count; col++)
+            if (a == b[i])
             {
-                if (grid[col][row].Count > 1)
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+
+    private bool CheckSocketsFit(Connection a, Connection b)
+    {
+        return a.FitsInto(b);
+
+    }
+
+
+    /// <summary>
+    /// Returns a list of all valid connections that fit into the sockest in the given direction of the list of tiles.
+    /// If a valid connection appers twice it is only added once to the returned list.
+    /// </summary>
+    /// <param name="tiles">Tiles that are being checked</param>
+    /// <param name="dir">Direction that is being checked N/E/S/W</param>
+    /// <returns></returns>
+    private List<Connection> GetValidConnections(List<Tile> tiles, int dir)
+    {
+        List<Connection> validConnections = new List<Connection>();
+
+        for (int i = 0; i < tiles.Count; i++)
+        {
+            // possible connectors in the given direction
+            List<Tile> possibleConnectors = tiles[i].possibleConnectors[dir];
+
+            for (int j = 0; j < possibleConnectors.Count; j++)
+            {
+                bool addToList = true;
+                Connection[] possibleSockets = possibleConnectors[j].sockets;
+
+                for (int x = 0; x < validConnections.Count; x++)
                 {
-                    if (grid[col][row].Count < grid[lowestIndex.x][lowestIndex.y].Count || grid[lowestIndex.x][lowestIndex.y].Count <= 1)
+                    if (validConnections.Contains(possibleSockets[(dir + oppositeDirModifier) % possibleSockets.Length]))
                     {
-                        lowestIndex.x = col;
-                        lowestIndex.y = row;
+                        addToList = false;
+                        break;
                     }
                 }
-            }
-        }
 
-        return lowestIndex;
-    }
-
-    private bool WaveFunctionCollapsed()
-    {
-        for (int row = 0; row < grid.Count; row++)
-        {
-            for (int col = 0; col < grid[row].Count; col++)
-            {
-                if (grid[col][row].Count > 1)
+                if (addToList)
                 {
-                    return false;
+                    validConnections.Add(possibleConnectors[j].sockets[(dir + 2) % 4]);
                 }
             }
         }
 
-        return true;
+        return validConnections;
     }
+
+
+
+
+
+
+
 
     #endregion
 
@@ -397,9 +436,9 @@ public class WaveCollapse2D : MonoBehaviour
         {
             for (int col = 0; col < grid[row].Count; col++)
             {
-                GameObject temp = Instantiate(grid[col][row][0].prefab, new Vector3(col, 0, row), Quaternion.identity, transform);
-                temp.name = "" + col + ", " + row + ": " + grid[col][row][0].rotationIndex;
-                switch (grid[col][row][0].rotationIndex)
+                GameObject temp = Instantiate(grid[col][row].possibleTiles[0].prefab, new Vector3(col, 0, row), Quaternion.identity, transform);
+                temp.name = "" + col + ", " + row + ": " + grid[col][row].possibleTiles[0].rotationIndex;
+                switch (grid[col][row].possibleTiles[0].rotationIndex)
                 {
                     case 0:
                         temp.transform.eulerAngles = new Vector3(0, 0, 0);
