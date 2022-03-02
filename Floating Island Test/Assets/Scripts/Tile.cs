@@ -21,6 +21,7 @@ public class Tile : ScriptableObject
     [HideInInspector] public List<List<Tile>> immpossibleConnectors;
 
 
+
     public Tile()
     {
         sockets = new Connection[4];

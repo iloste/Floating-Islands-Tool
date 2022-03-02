@@ -7,16 +7,17 @@ public class Cell
 {
     public List<Tile> possibleTiles;
     public List<Tile> impossibleTiles;
-    public Vector2 gridCoords;
+    public Vector2Int gridCoords;
+    public int testNumber = 0;
 
     public Cell()
     {
         possibleTiles = new List<Tile>();
         impossibleTiles = new List<Tile>();
-        gridCoords = Vector2.zero;
+        gridCoords = Vector2Int.zero;
     }
 
-    public Cell(List<Tile> possibleTiles, Vector2 gridCoords)
+    public Cell(List<Tile> possibleTiles, Vector2Int gridCoords)
     {
         this.possibleTiles = possibleTiles;
         impossibleTiles = new List<Tile>();
