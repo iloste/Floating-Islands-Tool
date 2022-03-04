@@ -133,6 +133,7 @@ GameObject:
   m_Component:
   - component: {fileID: 81911871}
   - component: {fileID: 81911870}
+  - component: {fileID: 81911872}
   m_Layer: 0
   m_Name: Generator
   m_TagString: Untagged
@@ -160,7 +161,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: ffe0ddb025ecf7240823c6214bb60421, type: 2}
   gridSize: {x: 15, y: 15}
   debug: 1
-  randomSeed: 1
+  randomSeed: 0
+  seed: 0
 --- !u!4 &81911871
 Transform:
   m_ObjectHideFlags: 0
@@ -175,6 +177,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &81911872
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 81911869}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a39c08762f83d364b82a3e439a32f222, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!850595691 &236306050
 LightingSettings:
   m_ObjectHideFlags: 0

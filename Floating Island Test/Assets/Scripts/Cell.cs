@@ -9,6 +9,8 @@ public class Cell
     public List<Tile> impossibleTiles;
     public Vector2Int gridCoords;
     public int testNumber = 0;
+    public bool displayed;
+    public GameObject GO;
 
     public Cell()
     {
@@ -33,6 +35,28 @@ public class Cell
         }
 
         return true;
+    }
+
+    /// <summary>
+    /// Picks one of it's possible tiles to be the set tile.
+    /// </summary>
+    public void CollapsePossibleTiles()
+    {
+        int random = Random.Range(0, possibleTiles.Count);
+        Tile chosen = possibleTiles[random];
+        possibleTiles.RemoveAt(random);
+        impossibleTiles = new List<Tile>(possibleTiles);
+        possibleTiles = new List<Tile>();
+        possibleTiles.Add(chosen);
+    }
+
+
+    public void ResetPossibleTiles()
+    {
+        Tile chosen = possibleTiles[0];
+        possibleTiles = new List<Tile>(impossibleTiles);
+        impossibleTiles = new List<Tile>();
+        possibleTiles.Add(chosen);
     }
 
 
@@ -70,5 +94,13 @@ public class Cell
         }
 
         return validConnections;
+    }
+
+
+    public void RemoveDisplayTile()
+    {
+        GameObject.Destroy(GO);
+        displayed = false;
+        //GO = null;
     }
 }

@@ -182,27 +182,6 @@ public class FIGrid
     }
 
 
-    /// <summary>
-    /// Picks one of it's possible tiles to be the set tile.
-    /// </summary>
-    public void CollapsePossibleTiles(Vector2Int cellCoords)
-    {
-        Cell cell = grid[cellCoords.x, cellCoords.y];
-        int random = Random.Range(0, cell.possibleTiles.Count);
-
-        // To do: Remove debug when not needed
-        //if (debug)
-        //{
-        //    random = 0;
-        //    debug = false;
-        //}
-
-        Tile chosen = cell.possibleTiles[random];
-        cell.possibleTiles = new List<Tile>();
-        cell.possibleTiles.Add(chosen);
-    }
-
-
     public Cell GetCell(Vector2Int coords)
     {
         if (coords.x < gridSize.x && coords.x >= 0)

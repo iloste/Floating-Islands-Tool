@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class WaveCollapse2D : MonoBehaviour
 {
+    public static WaveCollapse2D instance = null;
+
     [SerializeField] Tile[] originalTiles;
     [SerializeField] Vector2Int gridSize;
     List<Tile> allTiles;
@@ -16,8 +18,20 @@ public class WaveCollapse2D : MonoBehaviour
 
     int oppositeDirModifier = 2;
 
+
+
+
     private void Awake()
     {
+        if (instance == null)
+        {
+            instance = this;
+        }
+        else
+        {
+            Destroy(this);
+        }
+
         if (randomSeed)
         {
             seed = Random.Range(0, 300000);
@@ -28,8 +42,9 @@ public class WaveCollapse2D : MonoBehaviour
 
         InitialiseTiles();
         InitialiseGrid();
-        GenerateTerrain();
-        Display();
+        //GenerateTerrain();
+        //Iterate(new Vector2Int(4, 4));
+        //Display();
     }
 
 
@@ -137,8 +152,20 @@ public class WaveCollapse2D : MonoBehaviour
     {
         while (!grid.WaveFunctionCollapsed())
         {
-            Iterate();
+            //Iterate();
         }
+    }
+
+    public void AddPiece(Vector2Int coords)
+    {
+        grid.GetCell(coords).CollapsePossibleTiles();
+        Propagate(coords);
+        Display();
+    }
+
+    public void RemovePiece(Vector2Int coords)
+    {
+
     }
 
 
@@ -148,8 +175,18 @@ public class WaveCollapse2D : MonoBehaviour
     private void Iterate()
     {
         Vector2Int lowestEntropy = grid.GetLowestEntropy();
-        grid.CollapsePossibleTiles(lowestEntropy);
+        grid.GetCell(lowestEntropy).CollapsePossibleTiles();
         Propagate(lowestEntropy);
+    }
+
+
+    /// <summary>
+    /// Iterates through the grid, collapsing the cells with the lowest enttopy, then handles the changes that causes in neighbouring cells
+    /// </summary>
+    public void Iterate(Vector2Int gridCoords)
+    {
+        grid.GetCell(gridCoords).CollapsePossibleTiles();
+        Propagate(gridCoords);
     }
 
 
@@ -226,35 +263,46 @@ public class WaveCollapse2D : MonoBehaviour
     #endregion
 
     #region Display
-    private void Display()
+    public void Display()
     {
         for (int row = 0; row < grid.grid.GetLength(0); row++)
         {
             for (int col = 0; col < grid.grid.GetLength(1); col++)
             {
-                GameObject temp = Instantiate(grid.GetCell(col, row).possibleTiles[0].prefab, new Vector3(col, 0, row), Quaternion.identity, transform);
-                temp.name = "" + col + ", " + row + ": " + grid.GetCell(col, row).possibleTiles[0].rotationIndex;
-                switch (grid.GetCell(col, row).possibleTiles[0].rotationIndex)
-                {
-                    case 0:
-                        temp.transform.eulerAngles = new Vector3(0, 0, 0);
-                        break;
-                    case 1:
-                        temp.transform.eulerAngles = new Vector3(0, 90, 0);
-                        break;
-                    case 2:
-                        temp.transform.eulerAngles = new Vector3(0, 180, 0);
-                        break;
-                    case 3:
-                        temp.transform.eulerAngles = new Vector3(0, 270, 0);
-                        break;
-                    default:
-                        break;
-                }
+                Cell cell = grid.GetCell(col, row);
 
+                if (cell.Collapsed() && !cell.displayed && cell.possibleTiles[0].prefab != null)
+                {
+                    cell.GO = Instantiate(cell.possibleTiles[0].prefab, new Vector3(col + 0.5f, 0, row + 0.5f), Quaternion.identity, transform);
+                    cell.GO.name = "" + col + ", " + row + ": " + cell.possibleTiles[0].rotationIndex;
+
+                    switch (cell.possibleTiles[0].rotationIndex)
+                    {
+                        case 0:
+                            cell.GO.transform.eulerAngles = new Vector3(0, 0, 0);
+                            break;
+                        case 1:
+                            cell.GO.transform.eulerAngles = new Vector3(0, 90, 0);
+                            break;
+                        case 2:
+                            cell.GO.transform.eulerAngles = new Vector3(0, 180, 0);
+                            break;
+                        case 3:
+                            cell.GO.transform.eulerAngles = new Vector3(0, 270, 0);
+                            break;
+                        default:
+                            break;
+                    }
+
+                    cell.displayed = true;
+                }
             }
         }
     }
 
     #endregion
+
+
+    
+
 }
