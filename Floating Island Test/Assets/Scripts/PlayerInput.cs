@@ -11,10 +11,20 @@ public class PlayerInput : MonoBehaviour
 
     private void Update()
     {
-        GetInput();
+        //GetInputWaveCollapse();
+        GetInputMarchingSquares();
     }
 
-    private void GetInput()
+    private void GetInputMarchingSquares()
+    {
+        if (Input.GetKeyDown(KeyCode.Mouse0))
+        {
+            GetWorldPositions();
+            MarchingSquaresTest.instance.FillVertex(new Vector2Int(worldPosRefined.x, worldPosRefined.z));
+        }
+    }
+
+    private void GetInputWaveCollapse()
     {
         if (Input.GetKeyDown(KeyCode.Mouse0))
         {
