@@ -115,13 +115,21 @@ public class MSCell
         MSTile[] tileTypes = new MSTile[4];
 
         #region if all full or all empty
-        if (vertices[0] && vertices[1] && vertices[2] && vertices[3] ||
-            !vertices[0] && !vertices[1] && !vertices[2] && !vertices[3])
+        if (vertices[0] && vertices[1] && vertices[2] && vertices[3])
+        {
+            tileTypes[0] = new MSTile(0, MSTile.TileType.Center);
+            tileTypes[1] = new MSTile(0, MSTile.TileType.Center);
+            tileTypes[2] = new MSTile(0, MSTile.TileType.Center);
+            tileTypes[3] = new MSTile(0, MSTile.TileType.Center);
+            return tileTypes;
+        }
+        else if (!vertices[0] && !vertices[1] && !vertices[2] && !vertices[3])
         {
             tileTypes[0] = new MSTile(0, MSTile.TileType.None);
             tileTypes[1] = new MSTile(0, MSTile.TileType.None);
             tileTypes[2] = new MSTile(0, MSTile.TileType.None);
             tileTypes[3] = new MSTile(0, MSTile.TileType.None);
+            return tileTypes;
         }
         #endregion
 

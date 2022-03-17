@@ -13,6 +13,7 @@ public class MSTile : ScriptableObject
         Edge,
         InvertedCorner,
         InvertedEdge,
+        Center,
     }
 
     public int rotationIndex;
