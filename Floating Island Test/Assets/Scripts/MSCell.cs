@@ -148,7 +148,7 @@ public class MSCell
         }
         else if (vertices[0] && vertices[1] && vertices[3])
         {
-            tileTypes[0] = new MSTile(2, MSTile.TileType.InvertedCorner);
+            tileTypes[0] = new MSTile(2, MSTile.TileType.Center);
         }
         #endregion
         #region top left
@@ -166,7 +166,7 @@ public class MSCell
         }
         else if (vertices[1] && vertices[2] && vertices[0])
         {
-            tileTypes[1] = new MSTile(3, MSTile.TileType.InvertedCorner);
+            tileTypes[1] = new MSTile(3, MSTile.TileType.Center);
         }
         #endregion
         #region top right
@@ -184,7 +184,7 @@ public class MSCell
         }
         else if (vertices[2] && vertices[3] && vertices[1])
         {
-            tileTypes[2] = new MSTile(0, MSTile.TileType.InvertedCorner);
+            tileTypes[2] = new MSTile(0, MSTile.TileType.Center);
         }
         #endregion
         #region bottom right
@@ -202,7 +202,7 @@ public class MSCell
         }
         else if (vertices[3] && vertices[0] && vertices[2])
         {
-            tileTypes[3] = new MSTile(1, MSTile.TileType.InvertedCorner);
+            tileTypes[3] = new MSTile(1, MSTile.TileType.Center);
         }
         #endregion
 
