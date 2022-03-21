@@ -102,11 +102,15 @@ public class MarchingCubesTest : MonoBehaviour
     public void FillVertex(Vector3Int coords)
     {
         vertices[coords.x, coords.y, coords.z].full = true;
-        // Instantiate(sg, new Vector3(coords.x, 0, coords.y), Quaternion.identity);
-
         UpdateCells();
     }
 
+
+    public void ClearVertex(Vector3Int coords)
+    {
+        vertices[coords.x, coords.y, coords.z].full = false;
+        UpdateCells();
+    }
 
     private void UpdateCells()
     {

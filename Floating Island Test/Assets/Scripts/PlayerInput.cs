@@ -31,6 +31,14 @@ public class PlayerInput : MonoBehaviour
                 MarchingSquaresTest.instance.FillVertex(new Vector2Int(worldPosRefined.x, worldPosRefined.z));
             }
         }
+        else if (Input.GetKeyDown(KeyCode.Mouse1))
+        {
+            GetWorldPositions();
+            if (!marchingCubes)
+            {
+                MarchingCubesTest.instance.ClearVertex(new Vector3Int(worldPosRefined.x, worldPosRefined.z, worldPosRefined.y + 1));
+            }
+        }
     }
 
     private void GetInputWaveCollapse()
