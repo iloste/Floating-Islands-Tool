@@ -157,7 +157,11 @@ public class MCCell
             }
             else if (mainCorner && forwardCorner && rightCorner && !upCorner && !diagonalCorner)
             {
-                tileTypes[i] = new MCTile(i, MCTile.TileType.CorneTopInverted);
+                tileTypes[i] = new MCTile(i, MCTile.TileType.CornerTopInverted);
+            }
+            else if (mainCorner && forwardCorner && rightCorner && upCorner && !diagonalCorner)
+            {
+                tileTypes[i] = new MCTile(i, MCTile.TileType.CornerCenterInverted);
             }
         }
         #endregion
@@ -211,6 +215,10 @@ public class MCCell
             else if (mainCorner && forwardCorner && rightCorner && !downCorner && !diagonalCorner)
             {
                 tileTypes[i] = new MCTile(i, MCTile.TileType.CornerBottomInverted);
+            }
+            else if (mainCorner && forwardCorner && rightCorner && downCorner && !diagonalCorner)
+            {
+                tileTypes[i] = new MCTile(i, MCTile.TileType.CornerCenterInverted);
             }
         }
         #endregion

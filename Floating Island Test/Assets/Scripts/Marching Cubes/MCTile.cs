@@ -20,7 +20,10 @@ public class MCTile : ScriptableObject
         MiddleBottom,
         MiddleTop,
         CornerBottomInverted,
-        CorneTopInverted,
+        CornerTopInverted,
+        ConerCenter,
+        CornerCenterInverted,
+
 
 
         //CornerCenterInverted,

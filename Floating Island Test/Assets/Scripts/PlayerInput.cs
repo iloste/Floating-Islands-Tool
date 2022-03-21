@@ -24,7 +24,7 @@ public class PlayerInput : MonoBehaviour
             if (!marchingCubes)
             {
                 MarchingCubesTest.instance.FillVertex(new Vector3Int(worldPosRefined.x, worldPosRefined.z, worldPosRefined.y + 1));
-                //MarchingCubesTest.instance.FillVertex(new Vector3Int(worldPosRefined.x, worldPosRefined.z, worldPosRefined.y + 2));
+                MarchingCubesTest.instance.FillVertex(new Vector3Int(worldPosRefined.x, worldPosRefined.z, worldPosRefined.y + 2));
             }
             else
             {

@@ -78,19 +78,7 @@ public class MarchingCubesTest : MonoBehaviour
                     verts[7] = vertices[col + 1, row, pillar + 1];
 
                     cells[col, row, pillar].vertices = verts;
-
-                    // create a new vertex and pass that in, see if that works.
-                    // Then try storing it as it's own variable, not an array.
-
-
-                    //cells[col, row].vertices[0] = vertices[col, row];
-                    //cells[col, row].vertices[1] = vertices[col + 1, row];
-                    //cells[col, row].vertices[2] = vertices[col + 1, row + 1];
-                    //cells[col, row].vertices[3] = vertices[col, row + 1];
-
-
                 }
-
             }
         }
     }
