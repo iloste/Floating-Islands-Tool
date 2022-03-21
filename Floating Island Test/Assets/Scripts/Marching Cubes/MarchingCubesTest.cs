@@ -44,7 +44,7 @@ public class MarchingCubesTest : MonoBehaviour
                 for (int pillar = 0; pillar < vertices.GetLength(2); pillar++)
                 {
                     vertices[col, row, pillar] = new MCVertex();
-                    vertices[col, row, pillar].coords = new Vector3Int(col, row, pillar); 
+                    vertices[col, row, pillar].coords = new Vector3Int(col, row, pillar);
                 }
             }
         }
@@ -72,10 +72,10 @@ public class MarchingCubesTest : MonoBehaviour
                     verts[3] = vertices[col + 1, row, pillar];
 
                     // top verticies
-                    verts[4] = vertices[col, row, pillar+1];
-                    verts[5] = vertices[col, row + 1, pillar+1];
-                    verts[6] = vertices[col + 1, row + 1, pillar+1];
-                    verts[7] = vertices[col + 1, row, pillar+1];
+                    verts[4] = vertices[col, row, pillar + 1];
+                    verts[5] = vertices[col, row + 1, pillar + 1];
+                    verts[6] = vertices[col + 1, row + 1, pillar + 1];
+                    verts[7] = vertices[col + 1, row, pillar + 1];
 
                     cells[col, row, pillar].vertices = verts;
 
@@ -96,7 +96,7 @@ public class MarchingCubesTest : MonoBehaviour
     }
 
 
-   
+
 
 
     public void FillVertex(Vector3Int coords)
@@ -116,7 +116,7 @@ public class MarchingCubesTest : MonoBehaviour
             {
                 for (int pillar = 0; pillar < cells.GetLength(2); pillar++)
                 {
-                    cells[col, row, pillar].Update(prefabs); 
+                    cells[col, row, pillar].Update(prefabs);
                 }
             }
         }

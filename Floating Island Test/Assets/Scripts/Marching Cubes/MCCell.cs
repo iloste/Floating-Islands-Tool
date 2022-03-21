@@ -119,6 +119,7 @@ public class MCCell
             bool mainCorner = vertices[i];
             bool forwardCorner = vertices[(i + 1) % 4];
             bool rightCorner = vertices[(i + 3) % 4];
+            bool diagonalCorner = vertices[(i + 2) % 4];
             bool upCorner = vertices[(i + 4) % 8];
 
             if (mainCorner)// && (forwardCorner || rightCorner || upCorner))
@@ -150,9 +151,13 @@ public class MCCell
             {
                 tileTypes[i] = new MCTile((i - 1) % 4, MCTile.TileType.EdgeCenter);
             }
-            else if (mainCorner && forwardCorner && rightCorner && !upCorner)
+            else if (mainCorner && forwardCorner && rightCorner && !upCorner && diagonalCorner)
             {
                 tileTypes[i] = new MCTile(i, MCTile.TileType.MiddleTop);
+            }
+            else if (mainCorner && forwardCorner && rightCorner && !upCorner && !diagonalCorner)
+            {
+                tileTypes[i] = new MCTile(i, MCTile.TileType.CorneTopInverted);
             }
         }
         #endregion
@@ -167,6 +172,7 @@ public class MCCell
             bool mainCorner = vertices[i];
             bool forwardCorner = vertices[4 + (i + 1) % 4];
             bool rightCorner = vertices[4 + (i + 3) % 4];
+            bool diagonalCorner = vertices[4 + (i + 2) % 4];
             bool downCorner = vertices[(i + 4) % 8];
 
             if (mainCorner)//&& (forwardCorner || rightCorner || downCorner))
@@ -198,9 +204,13 @@ public class MCCell
             {
                 tileTypes[i] = new MCTile((i - 1) % 4, MCTile.TileType.EdgeCenter);
             }
-            else if (mainCorner && forwardCorner && rightCorner && !downCorner)
+            else if (mainCorner && forwardCorner && rightCorner && !downCorner && diagonalCorner)
             {
                 tileTypes[i] = new MCTile(i, MCTile.TileType.MiddleBottom);
+            }
+            else if (mainCorner && forwardCorner && rightCorner && !downCorner && !diagonalCorner)
+            {
+                tileTypes[i] = new MCTile(i, MCTile.TileType.CornerBottomInverted);
             }
         }
         #endregion
