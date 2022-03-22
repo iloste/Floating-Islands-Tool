@@ -41,17 +41,28 @@ public class MarchingCubes : MonoBehaviour
     {
         vertices = new MCVertex[gridSize.x + 1, gridSize.y + 1, gridSize.z + 1];
 
-        for (int row = 0; row < vertices.GetLength(0); row++)
+        for (int x = 0; x < vertices.GetLength(0); x++)
         {
-            for (int col = 0; col < vertices.GetLength(1); col++)
+            for (int y = 0; y < vertices.GetLength(1); y++)
             {
-                for (int pillar = 0; pillar < vertices.GetLength(2); pillar++)
+                for (int z = 0; z < vertices.GetLength(2); z++)
                 {
-                    vertices[col, row, pillar] = new MCVertex();
-                    vertices[col, row, pillar].coords = new Vector3Int(col, row, pillar);
+                    vertices[x, y, z] = new MCVertex();
+                    vertices[x, y, z].coords = new Vector3Int(x, y, z);
                 }
             }
         }
+        //for (int row = 0; row < vertices.GetLength(0); row++)
+        //{
+        //    for (int col = 0; col < vertices.GetLength(1); col++)
+        //    {
+        //        for (int pillar = 0; pillar < vertices.GetLength(2); pillar++)
+        //        {
+        //            vertices[col, row, pillar] = new MCVertex();
+        //            vertices[col, row, pillar].coords = new Vector3Int(col, row, pillar);
+        //        }
+        //    }
+        //}
     }
 
 
@@ -62,32 +73,59 @@ public class MarchingCubes : MonoBehaviour
     {
         cells = new MCCell[gridSize.x, gridSize.y, gridSize.z];
 
-        for (int row = 0; row < cells.GetLength(0); row++)
+        for (int x = 0; x < cells.GetLength(0); x++)
         {
-            for (int col = 0; col < cells.GetLength(1); col++)
+            for (int y = 0; y < cells.GetLength(1); y++)
             {
-                for (int pillar = 0; pillar < cells.GetLength(2); pillar++)
+                for (int z = 0; z < cells.GetLength(2); z++)
                 {
-                    cells[col, row, pillar] = new MCCell();
-                    cells[col, row, pillar].coords = new Vector3Int(col, row, pillar);
+                    cells[x, y, z] = new MCCell();
+                    cells[x, y, z].coords = new Vector3Int(x, y, z);
 
                     MCVertex[] verts = new MCVertex[8];
                     // bottom vertices
-                    verts[0] = vertices[col, row, pillar];
-                    verts[1] = vertices[col, row + 1, pillar];
-                    verts[2] = vertices[col + 1, row + 1, pillar];
-                    verts[3] = vertices[col + 1, row, pillar];
+                    verts[0] = vertices[x, y, z];
+                    verts[1] = vertices[x, y, z + 1];
+                    verts[2] = vertices[x + 1, y, z + 1];
+                    verts[3] = vertices[x + 1, y, z];
 
                     // top verticies
-                    verts[4] = vertices[col, row, pillar + 1];
-                    verts[5] = vertices[col, row + 1, pillar + 1];
-                    verts[6] = vertices[col + 1, row + 1, pillar + 1];
-                    verts[7] = vertices[col + 1, row, pillar + 1];
+                    verts[4] = vertices[x, y + 1, z];
+                    verts[5] = vertices[x, y + 1, z + 1];
+                    verts[6] = vertices[x + 1, y + 1, z + 1];
+                    verts[7] = vertices[x + 1, y + 1, z];
 
-                    cells[col, row, pillar].vertices = verts;
+                    cells[x, y, z].vertices = verts;
                 }
             }
         }
+
+        //for (int row = 0; row < cells.GetLength(0); row++)
+        //{
+        //    for (int col = 0; col < cells.GetLength(1); col++)
+        //    {
+        //        for (int pillar = 0; pillar < cells.GetLength(2); pillar++)
+        //        {
+        //            cells[col, row, pillar] = new MCCell();
+        //            cells[col, row, pillar].coords = new Vector3Int(col, row, pillar);
+
+        //            MCVertex[] verts = new MCVertex[8];
+        //            // bottom vertices
+        //            verts[0] = vertices[col, row, pillar];
+        //            verts[1] = vertices[col, row + 1, pillar];
+        //            verts[2] = vertices[col + 1, row + 1, pillar];
+        //            verts[3] = vertices[col + 1, row, pillar];
+
+        //            // top verticies
+        //            verts[4] = vertices[col, row, pillar + 1];
+        //            verts[5] = vertices[col, row + 1, pillar + 1];
+        //            verts[6] = vertices[col + 1, row + 1, pillar + 1];
+        //            verts[7] = vertices[col + 1, row, pillar + 1];
+
+        //            cells[col, row, pillar].vertices = verts;
+        //        }
+        //    }
+        //}
     }
 
 
@@ -120,15 +158,25 @@ public class MarchingCubes : MonoBehaviour
     /// </summary>
     private void UpdateCells()
     {
-        for (int row = 0; row < cells.GetLength(0); row++)
+        for (int x = 0; x < cells.GetLength(0); x++)
         {
-            for (int col = 0; col < cells.GetLength(1); col++)
+            for (int y = 0; y < cells.GetLength(1); y++)
             {
-                for (int pillar = 0; pillar < cells.GetLength(2); pillar++)
+                for (int z = 0; z < cells.GetLength(2); z++)
                 {
-                    cells[col, row, pillar].Update(prefabs);
+                    cells[x, y, z].Update(prefabs);
                 }
             }
         }
+        // for (int row = 0; row < cells.GetLength(0); row++)
+        //    {
+        //        for (int col = 0; col < cells.GetLength(1); col++)
+        //        {
+        //            for (int pillar = 0; pillar < cells.GetLength(2); pillar++)
+        //            {
+        //                cells[col, row, pillar].Update(prefabs);
+        //            }
+        //        }
+        //    }
     }
 }

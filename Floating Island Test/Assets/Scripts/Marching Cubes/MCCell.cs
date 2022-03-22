@@ -53,7 +53,7 @@ public class MCCell
                 {
                     Vector3 offset = GetOffset(i);
 
-                    GOs[i] = GameObject.Instantiate(prefabs[(int)tiles[i].tileType - 1], new Vector3(vertices[i].coords.x, vertices[i].coords.z, vertices[i].coords.y) + offset, Quaternion.identity);
+                    GOs[i] = GameObject.Instantiate(prefabs[(int)tiles[i].tileType - 1], new Vector3(vertices[i].coords.x, vertices[i].coords.y, vertices[i].coords.z) + offset, Quaternion.identity);
                     GOs[i].transform.eulerAngles = new Vector3(0, 90 * tiles[i].rotationIndex, 0);
                    // GOs[i].name = tiles[i].tileType.ToString();
                 }

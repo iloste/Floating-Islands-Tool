@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2856221339220098195}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Corner Bottom Inverted
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -86,10 +86,32 @@ PrefabInstance:
       propertyPath: m_Name
       value: Corner Bottom Inverted
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: ac59756dc9cb887428f8948fcad0d753, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ac59756dc9cb887428f8948fcad0d753, type: 3}
+--- !u!1 &2181163268076285278 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: ac59756dc9cb887428f8948fcad0d753, type: 3}
+  m_PrefabInstance: {fileID: 1334303258387943439}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1517392854620665828 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: ac59756dc9cb887428f8948fcad0d753, type: 3}
   m_PrefabInstance: {fileID: 1334303258387943439}
   m_PrefabAsset: {fileID: 0}
+--- !u!65 &8794827379372273565
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2181163268076285278}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.5, y: 0.4225837, z: 0.5}
+  m_Center: {x: 0, y: 0.20370814, z: 0}
