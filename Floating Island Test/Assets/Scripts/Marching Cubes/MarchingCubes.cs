@@ -2,9 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MarchingCubesTest : MonoBehaviour
+public class MarchingCubes : MonoBehaviour
 {
-    public static MarchingCubesTest instance = null;
+    public static MarchingCubes instance = null;
     [SerializeField] GameObject[] prefabs;
 
     [SerializeField] Vector3Int gridSize;
@@ -12,6 +12,7 @@ public class MarchingCubesTest : MonoBehaviour
 
     MCVertex[,,] vertices;
     MCCell[,,] cells;
+
 
     private void Awake()
     {
@@ -33,6 +34,9 @@ public class MarchingCubesTest : MonoBehaviour
     }
 
 
+    /// <summary>
+    /// Creates the vertices for the grid
+    /// </summary>
     private void InitialiseVertices()
     {
         vertices = new MCVertex[gridSize.x + 1, gridSize.y + 1, gridSize.z + 1];
@@ -51,6 +55,9 @@ public class MarchingCubesTest : MonoBehaviour
     }
 
 
+    /// <summary>
+    /// Creates the cells for the grid. Each cell has 8 vertices
+    /// </summary>
     private void InitialiseCells()
     {
         cells = new MCCell[gridSize.x, gridSize.y, gridSize.z];
@@ -86,7 +93,10 @@ public class MarchingCubesTest : MonoBehaviour
 
 
 
-
+    /// <summary>
+    /// Sets the desired vertex to true and updates the cells.
+    /// </summary>
+    /// <param name="coords"></param>
     public void FillVertex(Vector3Int coords)
     {
         vertices[coords.x, coords.y, coords.z].full = true;
@@ -94,12 +104,20 @@ public class MarchingCubesTest : MonoBehaviour
     }
 
 
+    /// <summary>
+    /// Sets the desired vertex to false and updates the cells.
+    /// </summary>
+    /// <param name="coords"></param>
     public void ClearVertex(Vector3Int coords)
     {
         vertices[coords.x, coords.y, coords.z].full = false;
         UpdateCells();
     }
 
+
+    /// <summary>
+    /// Goes through each cell and calculates which tiles it will show.
+    /// </summary>
     private void UpdateCells()
     {
         for (int row = 0; row < cells.GetLength(0); row++)

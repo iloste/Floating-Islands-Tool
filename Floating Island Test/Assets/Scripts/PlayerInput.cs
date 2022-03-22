@@ -23,8 +23,8 @@ public class PlayerInput : MonoBehaviour
             GetWorldPositions();
             if (!marchingCubes)
             {
-                MarchingCubesTest.instance.FillVertex(new Vector3Int(worldPosRefined.x, worldPosRefined.z, worldPosRefined.y + 1));
-                MarchingCubesTest.instance.FillVertex(new Vector3Int(worldPosRefined.x, worldPosRefined.z, worldPosRefined.y + 2));
+                MarchingCubes.instance.FillVertex(new Vector3Int(worldPosRefined.x, worldPosRefined.z, worldPosRefined.y + 1));
+                //MarchingCubesTest.instance.FillVertex(new Vector3Int(worldPosRefined.x, worldPosRefined.z, worldPosRefined.y + 2));
             }
             else
             {
@@ -36,7 +36,7 @@ public class PlayerInput : MonoBehaviour
             GetWorldPositions();
             if (!marchingCubes)
             {
-                MarchingCubesTest.instance.ClearVertex(new Vector3Int(worldPosRefined.x, worldPosRefined.z, worldPosRefined.y + 1));
+                MarchingCubes.instance.ClearVertex(new Vector3Int(worldPosRefined.x, worldPosRefined.z, worldPosRefined.y + 1));
             }
         }
     }
@@ -62,11 +62,22 @@ public class PlayerInput : MonoBehaviour
         Plane plane = new Plane(Vector3.up, 0);
         float distance;
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
 
-        if (plane.Raycast(ray, out distance))
+        if (Physics.Raycast(ray.origin, ray.direction, out hit, Mathf.Infinity, LayerMask.GetMask("Default")))
         {
-            worldPosRaw = ray.GetPoint(distance);
+            Debug.Log("Hit: " + hit.transform.name);
+            worldPosRaw = hit.point;
         }
+        else
+        {
+            if (plane.Raycast(ray, out distance))
+            {
+                worldPosRaw = ray.GetPoint(distance);
+            }
+        }
+
+      
 
         worldPosRefined = new Vector3Int((int)worldPosRaw.x, 0, (int)worldPosRaw.z);
 

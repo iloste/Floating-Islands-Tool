@@ -23,12 +23,6 @@ public class MCTile : ScriptableObject
         CornerTopInverted,
         ConerCenter,
         CornerCenterInverted,
-
-
-
-        //CornerCenterInverted,
-
-
     }
 
     public int rotationIndex;
