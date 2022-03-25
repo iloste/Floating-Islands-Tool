@@ -26,7 +26,8 @@ public class PlayerInput : MonoBehaviour
             // GetWorldPositions();
             if (marchingCubes)
             {
-                MarchingCubes.instance.FillVertex(new Vector3Int(worldPosRefined.x, worldPosRefined.y, worldPosRefined.z));
+                MCWFC.instance.FillVertex(new Vector3Int(worldPosRefined.x, worldPosRefined.y+1, worldPosRefined.z));
+               // MarchingCubes.instance.FillVertex(new Vector3Int(worldPosRefined.x, worldPosRefined.y, worldPosRefined.z));
                 //MarchingCubes.instance.FillVertex(new Vector3Int(worldPosRefined.x, worldPosRefined.y + 1, worldPosRefined.z));
                 //MarchingCubesTest.instance.FillVertex(new Vector3Int(worldPosRefined.x, worldPosRefined.z, worldPosRefined.y + 2));
             }
@@ -45,7 +46,8 @@ public class PlayerInput : MonoBehaviour
                 if (tileTransform != null)
                 {
                     Vector3Int position = new Vector3Int(Mathf.RoundToInt(tileTransform.position.x), Mathf.RoundToInt(tileTransform.position.y), Mathf.RoundToInt(tileTransform.position.z));
-                    MarchingCubes.instance.ClearVertex(position);
+                    MCWFC.instance.ClearVertex(position);
+                    //MarchingCubes.instance.ClearVertex(position);
                 }
             }
         }
@@ -96,7 +98,7 @@ public class PlayerInput : MonoBehaviour
             worldPosRaw += hit.normal / 2;
            // worldPosRaw += Vector3.up/3;
             //worldPosRaw.y = Mathf.RoundToInt(worldPosRaw.y);
-            Debug.Log("Hit: " + hit.transform.name + "| Position: " + worldPosRaw);
+           // Debug.Log("Hit: " + hit.transform.name + "| Position: " + worldPosRaw);
         }
         else
         {

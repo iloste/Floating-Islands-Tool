@@ -25,12 +25,49 @@ public class MCTile : ScriptableObject
         CornerCenterInverted,
     }
 
+    public enum SpecialConnection
+    {
+        None,
+        Flipped,
+        Symmetrical,
+    }
+
+
     public int rotationIndex;
     public TileType tileType;
+
+    public Connection[] sockets;
+    public GameObject prefab;
+
+    [HideInInspector] public List<List<MCTile>> possibleConnectors;
+    [HideInInspector] public List<List<MCTile>> immpossibleConnectors;
+
+
 
     public MCTile(int rotationIndex, TileType tileType)
     {
         this.rotationIndex = rotationIndex;
         this.tileType = tileType;
+        sockets = new Connection[6];
+        //rotationIndex = 0;
+        possibleConnectors = new List<List<MCTile>>();
+
+        for (int i = 0; i < sockets.Length; i++)
+        {
+            possibleConnectors.Add(new List<MCTile>());
+        }
     }
+
+    public MCTile()
+    {
+        sockets = new Connection[6];
+        rotationIndex = 0;
+        possibleConnectors = new List<List<MCTile>>();
+
+        for (int i = 0; i < sockets.Length; i++)
+        {
+            possibleConnectors.Add(new List<MCTile>());
+        }
+    }
+
 }

@@ -5,6 +5,7 @@ using UnityEngine;
 public class FIGrid
 {
     public Cell[,] grid;
+
     List<Tile> allTiles;
     Vector2Int gridSize;
 
