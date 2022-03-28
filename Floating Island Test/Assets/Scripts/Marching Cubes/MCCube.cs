@@ -134,7 +134,7 @@ public class MCCube
 
                     GOs[i] = GameObject.Instantiate(cells[i].possibleTiles[0].prefab, new Vector3(vertices[i].coords.x, vertices[i].coords.y, vertices[i].coords.z) + offset, Quaternion.identity);
                     GOs[i].transform.eulerAngles = new Vector3(0, 90 * cells[i].possibleTiles[0].rotationIndex, 0);
-
+                    GOs[i].name = cells[i].possibleTiles[0].name;
                 }// GOs[i].name = tiles[i].tileType.ToString();
             }
         }

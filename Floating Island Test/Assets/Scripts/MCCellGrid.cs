@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MCGrid
+public class MCCellGrid
 {
     public Vector3Int gridSize;
     public MCCell[,,] grid;
@@ -10,14 +10,14 @@ public class MCGrid
 
     GameObject debugPrefab;
 
-    public MCGrid(Vector3Int gridSize, List<MCTile> allTiles)
+    public MCCellGrid(Vector3Int gridSize, List<MCTile> allTiles)
     {
         this.gridSize = gridSize;
         this.allTiles = allTiles;
         InitialiseGrid();
     }
 
-    public MCGrid(Vector3Int gridSize, List<MCTile> allTiles, GameObject debugPrefab)
+    public MCCellGrid(Vector3Int gridSize, List<MCTile> allTiles, GameObject debugPrefab)
     {
         this.debugPrefab = debugPrefab;
 

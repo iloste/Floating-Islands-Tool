@@ -76,8 +76,6 @@ public class MCCell
         //(I.e. if the cell connects north and east, the possible tiles have to connect north and east.
         for (int i = 0; i < possibleTiles.Count; i++)
         {
-
-
             if (!CheckPossibleTileFitsWithAllotedSockets(possibleTiles[i]))
             {
                 impossibleTiles.Add(possibleTiles[i]);
@@ -86,20 +84,23 @@ public class MCCell
             }
         }
 
-        // picks a tile at random
-        int random = Random.Range(0, possibleTiles.Count);
-        MCTile chosen = possibleTiles[random];
-        possibleTiles.RemoveAt(random);
-
-        // stores the rest in impossibleTiles
-        for (int i = 0; i < possibleTiles.Count; i++)
+        if (possibleTiles.Count > 0)
         {
-            impossibleTiles.Add(possibleTiles[i]);
-        }
+            // picks a tile at random
+            int random = Random.Range(0, possibleTiles.Count);
+            MCTile chosen = possibleTiles[random];
+            possibleTiles.RemoveAt(random);
 
-        // stores the chosen tile in possible tiles
-        possibleTiles = new List<MCTile>();
-        possibleTiles.Add(chosen);
+            // stores the rest in impossibleTiles
+            for (int i = 0; i < possibleTiles.Count; i++)
+            {
+                impossibleTiles.Add(possibleTiles[i]);
+            }
+
+            // stores the chosen tile in possible tiles
+            possibleTiles = new List<MCTile>();
+            possibleTiles.Add(chosen); 
+        }
     }
 
 

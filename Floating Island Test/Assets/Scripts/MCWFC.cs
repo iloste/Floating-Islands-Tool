@@ -12,10 +12,9 @@ public class MCWFC : MonoBehaviour
     [SerializeField] MCTile[] originalTiles;
     List<MCTile> allTiles;
 
-    MCVertex[,,] vertices;
-    MCCube[,,] cubes;
-
-    MCGrid grid;
+    MCVertexGrid vertexGrid;
+    MCCellGrid cellGrid;
+    MCCubeGrid cubeGrid;
 
     [SerializeField] GameObject vertexPrefab;
     [SerializeField] bool displayVertices;
@@ -25,8 +24,18 @@ public class MCWFC : MonoBehaviour
     [SerializeField] bool displayCubeLocations;
 
 
-    int oppositeDirModifier = 2;
     const int MAX_ROTATIONS = 4;
+
+
+    // to do: 
+    // carry on working through and refactoring. Maybe adding some more debugging options.
+    // the current problem is that the inverted corners are always the same rotation.
+    // You could also add in the up/down connection types.
+    //
+    // Basically, refactor like you did originally. So you have the initialisation region and such.
+
+
+
 
     private void Awake()
     {
@@ -38,22 +47,18 @@ public class MCWFC : MonoBehaviour
         {
             Destroy(this);
         }
-
-        //to do: check this should be *2
     }
 
 
     void Start()
     {
-        InitialiseVertices();
+        vertexGrid = new MCVertexGrid(gridSize + new Vector3Int(1, 1, 1), vertexPrefab);
         InitialiseTiles();
-        InitialiseCells();
-        InitialiseCubes();
+        cellGrid = new MCCellGrid(gridSize * 2, allTiles, cellDebugGO);
+        cubeGrid = new MCCubeGrid(gridSize, vertexGrid, cellGrid, cubeLocationPrefab);
 
 
         DisplayVertices();
-       // DisplayCellLocations();
-
 
         if (displayCubeLocations)
         {
@@ -63,7 +68,7 @@ public class MCWFC : MonoBehaviour
 
         //for (int i = 0; i < allTiles.Count; i++)
         //{
-        //    GameObject temp = GameObject.Instantiate(allTiles[i].prefab, new Vector3(i*2, 0, -5), Quaternion.identity);
+        //    GameObject temp = GameObject.Instantiate(allTiles[i].prefab, new Vector3(i * 2, 0, -5), Quaternion.identity);
         //    temp.transform.eulerAngles = new Vector3(0, 90 * allTiles[i].rotationIndex, 0);
 
         //}
@@ -138,7 +143,6 @@ public class MCWFC : MonoBehaviour
             rotatedTiles.Add(newTile);
         }
 
-
         return rotatedTiles;
     }
 
@@ -165,6 +169,16 @@ public class MCWFC : MonoBehaviour
             }
         }
     }
+
+
+
+
+
+
+
+
+    #endregion
+
 
 
     /// <summary>
@@ -195,102 +209,6 @@ public class MCWFC : MonoBehaviour
     }
 
 
-    private void InitialiseCells()
-    {
-        grid = new MCGrid(gridSize * 2, allTiles, cellDebugGO);
-        //grid = new MCGrid(gridSize * 2, allTiles);
-    }
-
-
-    /// <summary>
-    /// Creates the vertices for the grid
-    /// </summary>
-    private void InitialiseVertices()
-    {
-        // create parent game object to hold debug objects
-        GameObject vertexGrid = Instantiate(new GameObject(), this.transform);
-        vertexGrid.name = "Vertex Grid";
-
-        vertices = new MCVertex[gridSize.x + 1, gridSize.y + 1, gridSize.z + 1];
-
-        for (int x = 0; x < vertices.GetLength(0); x++)
-        {
-            for (int y = 0; y < vertices.GetLength(1); y++)
-            {
-                for (int z = 0; z < vertices.GetLength(2); z++)
-                {
-                    vertices[x, y, z] = new MCVertex();
-                    vertices[x, y, z].coords = new Vector3Int(x, y, z);
-
-                    // place icosphere in vertex's place for debug purposes
-                    vertices[x, y, z].vertexGO = Instantiate(vertexPrefab, new Vector3(x, y, z), Quaternion.identity, vertexGrid.transform);
-                    vertices[x, y, z].vertexGO.name = "" + x + ", " + y + ", " + z;
-                    vertices[x, y, z].vertexGO.transform.position += new Vector3(-.1f, 0, -0);
-                    vertices[x, y, z].vertexGO.transform.GetComponent<Renderer>().material.color = Color.red;
-
-                }
-            }
-        }
-    }
-
-
-    /// <summary>
-    /// Creates the cells for the grid. Each cell has 8 vertices
-    /// </summary>
-    private void InitialiseCubes()
-    {
-        cubes = new MCCube[gridSize.x, gridSize.y, gridSize.z];
-
-        for (int x = 0; x < cubes.GetLength(0); x++)
-        {
-            for (int y = 0; y < cubes.GetLength(1); y++)
-            {
-                for (int z = 0; z < cubes.GetLength(2); z++)
-                {
-                    cubes[x, y, z] = new MCCube();
-                    cubes[x, y, z].coords = new Vector3Int(x, y, z);
-
-                    #region Get Vertices
-                    MCVertex[] verts = new MCVertex[8];
-                    // bottom vertices
-                    verts[0] = vertices[x, y, z];
-                    verts[1] = vertices[x, y, z + 1];
-                    verts[2] = vertices[x + 1, y, z + 1];
-                    verts[3] = vertices[x + 1, y, z];
-
-                    // top verticies
-                    verts[4] = vertices[x, y + 1, z];
-                    verts[5] = vertices[x, y + 1, z + 1];
-                    verts[6] = vertices[x + 1, y + 1, z + 1];
-                    verts[7] = vertices[x + 1, y + 1, z];
-
-                    cubes[x, y, z].vertices = verts;
-                    #endregion
-
-                    #region Get Cells
-                    MCCell[] cells = new MCCell[8];
-                    // bottom vertices
-                    cells[0] = grid.GetCell(x * 2, y * 2, z * 2);
-                    cells[1] = grid.GetCell(x * 2, y * 2, z * 2 + 1);
-                    cells[2] = grid.GetCell(x * 2 + 1, y * 2, z * 2 + 1);
-                    cells[3] = grid.GetCell(x * 2 + 1, y * 2, z * 2);
-
-                    // top verticies
-                    cells[4] = grid.GetCell(x * 2, y * 2 + 1, z * 2);
-                    cells[5] = grid.GetCell(x * 2, y * 2 + 1, z * 2 + 1);
-                    cells[6] = grid.GetCell(x * 2 + 1, y * 2 + 1, z * 2 + 1);
-                    cells[7] = grid.GetCell(x * 2 + 1, y * 2 + 1, z * 2);
-
-                    cubes[x, y, z].cells = cells;
-                    #endregion
-                }
-            }
-        }
-    }
-
-    #endregion
-
-
     #region WaveCollapse
 
 
@@ -299,11 +217,11 @@ public class MCWFC : MonoBehaviour
     /// </summary>
     public void Iterate(Vector3Int gridCoords)
     {
-        grid.ResetPossibilitySpace();
+        cellGrid.ResetPossibilitySpace();
         // converts from vertex position to cell position because there are twice as many cells as there are vertices.
         gridCoords = gridCoords * 2 - new Vector3Int(1, 1, 1);
-        grid.GetCell(gridCoords).CollapsePossibleTiles();
-       // Propagate(gridCoords);
+        cellGrid.GetCell(gridCoords).CollapsePossibleTiles();
+        Propagate(gridCoords);
         DisplayCubes();
     }
 
@@ -315,14 +233,14 @@ public class MCWFC : MonoBehaviour
     private void Propagate(Vector3Int coords)
     {
         Queue<MCCell> q = new Queue<MCCell>();
-        q.Enqueue(grid.GetCell(coords));
+        q.Enqueue(cellGrid.GetCell(coords));
 
         //while still cells to examine
         while (q.Count > 0)
         {
             // take the next cell
             MCCell currentCell = q.Dequeue();
-            MCCell[] neighbours = grid.GetNeighbouringCells(currentCell);
+            MCCell[] neighbours = cellGrid.GetNeighbouringCells(currentCell);
 
             // for each neighbour/direction N\E\S\W\U\D
             for (int i = 0; i < neighbours.Length; i++)
@@ -390,7 +308,7 @@ public class MCWFC : MonoBehaviour
 
 
 
-
+    #region Utility Functions
 
     /// <summary>
     /// Sets the desired vertex to true and updates the cells.
@@ -402,14 +320,10 @@ public class MCWFC : MonoBehaviour
         // to do: remove this when the grid doesn't start at 0 on the y
         coords += Vector3Int.up;
 
-        vertices[coords.x, coords.y, coords.z].full = true;
-        vertices[coords.x, coords.y, coords.z].vertexGO.transform.GetComponent<Renderer>().material.color = Color.green;
-
+        vertexGrid.FillVertex(coords);
         UpdateCubesCells();
         Iterate(coords);
     }
-
-
 
 
     /// <summary>
@@ -422,10 +336,11 @@ public class MCWFC : MonoBehaviour
         // to do: remove this when the grid doesn't start at 0 on the y
         coords += Vector3Int.up;
 
-        vertices[coords.x, coords.y, coords.z].full = false;
-        vertices[coords.x, coords.y, coords.z].vertexGO.transform.GetComponent<Renderer>().material.color = Color.red;
+        vertexGrid.ClearVertex(coords);
 
-         UpdateCubesCells();
+        UpdateCubesCells();
+        Iterate(coords);
+
     }
 
 
@@ -434,91 +349,27 @@ public class MCWFC : MonoBehaviour
     /// </summary>
     private void UpdateCubesCells()
     {
-        for (int x = 0; x < cubes.GetLength(0); x++)
-        {
-            for (int y = 0; y < cubes.GetLength(1); y++)
-            {
-                for (int z = 0; z < cubes.GetLength(2); z++)
-                {
-                    if (x == 1 && y == 1 && z == 1)
-                    {
-
-                    }
-                    cubes[x, y, z].UpdateCubesCells();
-                }
-            }
-        }
-
+        cubeGrid.UpdateCubesCells();
     }
 
 
     private void DisplayCubes()
     {
-        for (int x = 0; x < cubes.GetLength(0); x++)
-        {
-            for (int y = 0; y < cubes.GetLength(1); y++)
-            {
-                for (int z = 0; z < cubes.GetLength(2); z++)
-                {
-                    cubes[x, y, z].Update2();
-                }
-            }
-        }
+        cubeGrid.DisplayCubes();
     }
 
 
-    #region Displaying
     private void DisplayVertices()
     {
-        for (int x = 0; x < vertices.GetLength(0); x++)
-        {
-            for (int y = 0; y < vertices.GetLength(1); y++)
-            {
-                for (int z = 0; z < vertices.GetLength(2); z++)
-                {
-                    vertices[x, y, z].vertexGO.SetActive(displayVertices);
-                }
-            }
-        }
+        vertexGrid.DisplayVertices(displayVertices);
     }
-
-    private void DisplayCellLocations()
-    {
-        for (int x = 0; x < grid.gridSize.x; x++)
-        {
-            for (int y = 0; y < grid.gridSize.y; y++)
-            {
-                for (int z = 0; z < grid.gridSize.z; z++)
-                {
-                    grid.grid[x, y, z].debugGO.SetActive(displayActiveCellLocations);
-                }
-            }
-        }
-    }
-
-
 
 
     private void DisplayCubeLocations()
     {
-        GameObject cubeGrid = Instantiate(new GameObject(), this.transform);
-        cubeGrid.name = "cube Grid";
-
-        for (int x = 0; x < cubes.GetLength(0); x++)
-        {
-            for (int y = 0; y < cubes.GetLength(1); y++)
-            {
-                for (int z = 0; z < cubes.GetLength(2); z++)
-                {
-                    GameObject temp = Instantiate(cubeLocationPrefab, new Vector3(x, y, z), Quaternion.identity, cubeGrid.transform);
-                    temp.name = "" + x + ", " + y + ", " + z;
-                    temp.transform.position += new Vector3(0.5f, 0.5f, 0.5f);
-                }
-            }
-        }
+        cubeGrid.DisplayCubes();
     }
 
     #endregion
-
 
 }
