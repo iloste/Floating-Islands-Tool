@@ -8,7 +8,6 @@ public class MCWFC : MonoBehaviour
     [SerializeField] GameObject[] prefabs;
 
     [SerializeField] Vector3Int gridSize;
-    [SerializeField] GameObject sg;
 
     [SerializeField] MCTile[] originalTiles;
     List<MCTile> allTiles;
@@ -17,6 +16,14 @@ public class MCWFC : MonoBehaviour
     MCCube[,,] cubes;
 
     MCGrid grid;
+
+    [SerializeField] GameObject vertexPrefab;
+    [SerializeField] bool displayVertices;
+    [SerializeField] GameObject cellDebugGO;
+    [SerializeField] public bool displayActiveCellLocations;
+    [SerializeField] GameObject cubeLocationPrefab;
+    [SerializeField] bool displayCubeLocations;
+
 
     int oppositeDirModifier = 2;
     const int MAX_ROTATIONS = 4;
@@ -43,10 +50,28 @@ public class MCWFC : MonoBehaviour
         InitialiseCells();
         InitialiseCubes();
 
-     
+
+        DisplayVertices();
+       // DisplayCellLocations();
+
+
+        if (displayCubeLocations)
+        {
+            DisplayCubeLocations();
+        }
+
+
+        //for (int i = 0; i < allTiles.Count; i++)
+        //{
+        //    GameObject temp = GameObject.Instantiate(allTiles[i].prefab, new Vector3(i*2, 0, -5), Quaternion.identity);
+        //    temp.transform.eulerAngles = new Vector3(0, 90 * allTiles[i].rotationIndex, 0);
+
+        //}
+
         //vertices[1, 1, 1].full = true;
         //vertices[2, 1, 1].full = true;
-        //UpdateCubes();
+        //vertices[2, 1, 2].full = true;
+        //UpdateCubesCells();
         //Iterate(new Vector3Int(1, 1, 1));
     }
 
@@ -172,7 +197,8 @@ public class MCWFC : MonoBehaviour
 
     private void InitialiseCells()
     {
-        grid = new MCGrid(gridSize * 2, allTiles);
+        grid = new MCGrid(gridSize * 2, allTiles, cellDebugGO);
+        //grid = new MCGrid(gridSize * 2, allTiles);
     }
 
 
@@ -181,6 +207,10 @@ public class MCWFC : MonoBehaviour
     /// </summary>
     private void InitialiseVertices()
     {
+        // create parent game object to hold debug objects
+        GameObject vertexGrid = Instantiate(new GameObject(), this.transform);
+        vertexGrid.name = "Vertex Grid";
+
         vertices = new MCVertex[gridSize.x + 1, gridSize.y + 1, gridSize.z + 1];
 
         for (int x = 0; x < vertices.GetLength(0); x++)
@@ -191,6 +221,13 @@ public class MCWFC : MonoBehaviour
                 {
                     vertices[x, y, z] = new MCVertex();
                     vertices[x, y, z].coords = new Vector3Int(x, y, z);
+
+                    // place icosphere in vertex's place for debug purposes
+                    vertices[x, y, z].vertexGO = Instantiate(vertexPrefab, new Vector3(x, y, z), Quaternion.identity, vertexGrid.transform);
+                    vertices[x, y, z].vertexGO.name = "" + x + ", " + y + ", " + z;
+                    vertices[x, y, z].vertexGO.transform.position += new Vector3(-.1f, 0, -0);
+                    vertices[x, y, z].vertexGO.transform.GetComponent<Renderer>().material.color = Color.red;
+
                 }
             }
         }
@@ -266,7 +303,7 @@ public class MCWFC : MonoBehaviour
         // converts from vertex position to cell position because there are twice as many cells as there are vertices.
         gridCoords = gridCoords * 2 - new Vector3Int(1, 1, 1);
         grid.GetCell(gridCoords).CollapsePossibleTiles();
-        Propagate(gridCoords);
+       // Propagate(gridCoords);
         DisplayCubes();
     }
 
@@ -292,6 +329,10 @@ public class MCWFC : MonoBehaviour
             {
                 if (neighbours[i] != null)
                 {
+                    if (neighbours[i].coords == new Vector3Int(3, 1, 1))
+                    {
+
+                    }
                     // possible connections in the given direction
                     List<Connection> validConnections = currentCell.GetValidConnections(i);
 
@@ -303,7 +344,7 @@ public class MCWFC : MonoBehaviour
                         for (int j = 0; j < possibleNeighbourTiles.Count; j++)
                         {
                             Connection[] possibleSockets = possibleNeighbourTiles[j].sockets;
-                            int index = (GetOppositeDirection(i)) % possibleSockets.Length;
+                            int index = (GetOppositeDirection(i));// % possibleSockets.Length;
                             // int index = (i + oppositeDirModifier) % possibleSockets.Length;
 
                             // if possible tile doesn't match, remove it
@@ -315,7 +356,7 @@ public class MCWFC : MonoBehaviour
                             }
                         }
 
-                        if (addToStack)// to do: add to stack if not collapsed and maybe only if not already in the stack
+                        if (addToStack && !q.Contains(neighbours[i]))// to do: add to stack if not collapsed and maybe only if not already in the stack
                         {
                             q.Enqueue(neighbours[i]);
                             neighbours[i].possibleTiles = possibleNeighbourTiles;
@@ -357,14 +398,18 @@ public class MCWFC : MonoBehaviour
     /// <param name="coords"></param>
     public void FillVertex(Vector3Int coords)
     {
-        vertices[coords.x, coords.y, coords.z].full = true;
-        UpdateCubes();
-        if (grid.grid[2, 2, 2].Collapsed())
-        {
+        // debug purposes
+        // to do: remove this when the grid doesn't start at 0 on the y
+        coords += Vector3Int.up;
 
-        }
+        vertices[coords.x, coords.y, coords.z].full = true;
+        vertices[coords.x, coords.y, coords.z].vertexGO.transform.GetComponent<Renderer>().material.color = Color.green;
+
+        UpdateCubesCells();
         Iterate(coords);
     }
+
+
 
 
     /// <summary>
@@ -373,15 +418,21 @@ public class MCWFC : MonoBehaviour
     /// <param name="coords"></param>
     public void ClearVertex(Vector3Int coords)
     {
+        // debug purposes
+        // to do: remove this when the grid doesn't start at 0 on the y
+        coords += Vector3Int.up;
+
         vertices[coords.x, coords.y, coords.z].full = false;
-        UpdateCubes();
+        vertices[coords.x, coords.y, coords.z].vertexGO.transform.GetComponent<Renderer>().material.color = Color.red;
+
+         UpdateCubesCells();
     }
 
 
     /// <summary>
     /// Goes through each cell and calculates which tiles it will show.
     /// </summary>
-    private void UpdateCubes()
+    private void UpdateCubesCells()
     {
         for (int x = 0; x < cubes.GetLength(0); x++)
         {
@@ -389,7 +440,11 @@ public class MCWFC : MonoBehaviour
             {
                 for (int z = 0; z < cubes.GetLength(2); z++)
                 {
-                    cubes[x, y, z].Update(prefabs);
+                    if (x == 1 && y == 1 && z == 1)
+                    {
+
+                    }
+                    cubes[x, y, z].UpdateCubesCells();
                 }
             }
         }
@@ -410,4 +465,60 @@ public class MCWFC : MonoBehaviour
             }
         }
     }
+
+
+    #region Displaying
+    private void DisplayVertices()
+    {
+        for (int x = 0; x < vertices.GetLength(0); x++)
+        {
+            for (int y = 0; y < vertices.GetLength(1); y++)
+            {
+                for (int z = 0; z < vertices.GetLength(2); z++)
+                {
+                    vertices[x, y, z].vertexGO.SetActive(displayVertices);
+                }
+            }
+        }
+    }
+
+    private void DisplayCellLocations()
+    {
+        for (int x = 0; x < grid.gridSize.x; x++)
+        {
+            for (int y = 0; y < grid.gridSize.y; y++)
+            {
+                for (int z = 0; z < grid.gridSize.z; z++)
+                {
+                    grid.grid[x, y, z].debugGO.SetActive(displayActiveCellLocations);
+                }
+            }
+        }
+    }
+
+
+
+
+    private void DisplayCubeLocations()
+    {
+        GameObject cubeGrid = Instantiate(new GameObject(), this.transform);
+        cubeGrid.name = "cube Grid";
+
+        for (int x = 0; x < cubes.GetLength(0); x++)
+        {
+            for (int y = 0; y < cubes.GetLength(1); y++)
+            {
+                for (int z = 0; z < cubes.GetLength(2); z++)
+                {
+                    GameObject temp = Instantiate(cubeLocationPrefab, new Vector3(x, y, z), Quaternion.identity, cubeGrid.transform);
+                    temp.name = "" + x + ", " + y + ", " + z;
+                    temp.transform.position += new Vector3(0.5f, 0.5f, 0.5f);
+                }
+            }
+        }
+    }
+
+    #endregion
+
+
 }

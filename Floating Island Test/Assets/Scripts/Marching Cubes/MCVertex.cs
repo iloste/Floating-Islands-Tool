@@ -6,4 +6,7 @@ public class MCVertex
 {
     public Vector3Int coords;
     public bool full;
+    public GameObject vertexGO;
+
+   
 }

@@ -8,8 +8,19 @@ public class MCGrid
     public MCCell[,,] grid;
     List<MCTile> allTiles;
 
+    GameObject debugPrefab;
+
     public MCGrid(Vector3Int gridSize, List<MCTile> allTiles)
     {
+        this.gridSize = gridSize;
+        this.allTiles = allTiles;
+        InitialiseGrid();
+    }
+
+    public MCGrid(Vector3Int gridSize, List<MCTile> allTiles, GameObject debugPrefab)
+    {
+        this.debugPrefab = debugPrefab;
+
         this.gridSize = gridSize;
         this.allTiles = allTiles;
         InitialiseGrid();
@@ -18,6 +29,9 @@ public class MCGrid
 
     private void InitialiseGrid()
     {
+        GameObject cellGrid = GameObject.Instantiate(new GameObject());
+        cellGrid.name = "cell Grid";
+
         grid = new MCCell[gridSize.x, gridSize.y, gridSize.z];
 
         for (int x = 0; x < gridSize.x; x++)
@@ -27,6 +41,10 @@ public class MCGrid
                 for (int z = 0; z < gridSize.z; z++)
                 {
                     grid[x, y, z] = new MCCell(new List<MCTile>(allTiles), new Vector3Int(x, y, z));
+                    grid[x, y, z].debugGO = GameObject.Instantiate(debugPrefab, grid[x, y, z].worldPosition, Quaternion.identity, cellGrid.transform);
+                    grid[x, y, z].debugGO.name = "" + x + ", " + y + ", " + z;
+                    grid[x, y, z].debugGO.transform.position += new Vector3(0.25f, 0.25f, 0.25f);
+                    grid[x, y, z].SetTileExists(false);
                 }
             }
         }
@@ -204,7 +222,15 @@ public class MCGrid
             {
                 for (int z = 0; z < grid.GetLength(2); z++)
                 {
-                    grid[x, y, z].ResetPossibleTiles();
+                    if (x == 1 && y == 1 && z == 1)
+                    {
+
+                    }
+                    if (x == 3 && y == 1 && z == 2)
+                    {
+
+                    }
+                    grid[x, y, z].ResetPossibleTiles(allTiles);
                 }
             }
         }

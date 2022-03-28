@@ -129,7 +129,7 @@ public class MarchingCubes : MonoBehaviour
             {
                 for (int z = 0; z < cells.GetLength(2); z++)
                 {
-                    cells[x, y, z].Update(prefabs);
+                    cells[x, y, z].UpdateCubesCells();
                 }
             }
         }

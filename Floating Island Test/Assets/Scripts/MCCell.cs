@@ -9,13 +9,17 @@ public class MCCell
     public List<MCTile> possibleTiles;
     public List<MCTile> impossibleTiles;
     public Vector3Int coords;
-    public bool TileExists { get; set; }
+    public Vector3 worldPosition;
+    public GameObject debugGO;
+    public bool TileExists { get; private set; }
+
 
     public MCCell(List<MCTile> allTiles, Vector3Int coords)
     {
         this.possibleTiles = allTiles;
         impossibleTiles = new List<MCTile>();
         this.coords = coords;
+        worldPosition = new Vector3(coords.x / 2f, coords.y / 2f, coords.z / 2f);
         filledSockets = new bool[6];
         connections = new Connection[6];
     }
@@ -31,12 +35,35 @@ public class MCCell
     }
 
 
+    public void SetTileExists(bool exists)
+    {
+        if (exists)
+        {
+            debugGO.transform.GetComponent<Renderer>().material.color = Color.green;
+        }
+        else
+        {
+            debugGO.transform.GetComponent<Renderer>().material.color = Color.red;
+        }
+
+        if (MCWFC.instance.displayActiveCellLocations)
+        {
+            debugGO.SetActive(exists);
+        }
+        else
+        {
+            debugGO.SetActive(false);
+        }
+
+        TileExists = exists;
+    }
+
     public void RemovePossibleTile(int index)
     {
         if (index < possibleTiles.Count)
         {
             impossibleTiles.Add(possibleTiles[index]);
-            possibleTiles.RemoveAt(index); 
+            possibleTiles.RemoveAt(index);
         }
     }
 
@@ -49,6 +76,8 @@ public class MCCell
         //(I.e. if the cell connects north and east, the possible tiles have to connect north and east.
         for (int i = 0; i < possibleTiles.Count; i++)
         {
+
+
             if (!CheckPossibleTileFitsWithAllotedSockets(possibleTiles[i]))
             {
                 impossibleTiles.Add(possibleTiles[i]);
@@ -61,7 +90,7 @@ public class MCCell
         int random = Random.Range(0, possibleTiles.Count);
         MCTile chosen = possibleTiles[random];
         possibleTiles.RemoveAt(random);
-        
+
         // stores the rest in impossibleTiles
         for (int i = 0; i < possibleTiles.Count; i++)
         {
@@ -100,20 +129,34 @@ public class MCCell
     /// <summary>
     /// Resets possible tiles to all tiles
     /// </summary>
-    public void ResetPossibleTiles()
+    public void ResetPossibleTiles(List<MCTile> tiles)
     {
-        List<MCTile> temp = new List<MCTile>();
+        impossibleTiles = new List<MCTile>();
+        possibleTiles = new List<MCTile>(tiles);
+
 
         for (int i = 0; i < possibleTiles.Count; i++)
         {
-            temp.Add(possibleTiles[i]);
-        }
-        for (int i = 0; i < impossibleTiles.Count; i++)
-        {
-            temp.Add(impossibleTiles[i]);
+            if (!CheckPossibleTileFitsWithAllotedSockets(possibleTiles[i]))
+            {
+                impossibleTiles.Add(possibleTiles[i]);
+                possibleTiles.RemoveAt(i);
+                i--;
+            }
         }
 
-        possibleTiles = temp;
+        //List<MCTile> temp = new List<MCTile>();
+
+        //for (int i = 0; i < possibleTiles.Count; i++)
+        //{
+        //    temp.Add(possibleTiles[i]);
+        //}
+        //for (int i = 0; i < impossibleTiles.Count; i++)
+        //{
+        //    temp.Add(impossibleTiles[i]);
+        //}
+
+        //possibleTiles = temp;
     }
 
 
@@ -137,7 +180,7 @@ public class MCCell
                 for (int x = 0; x < validConnections.Count; x++)
                 {
                     if (validConnections.Contains(possibleSockets[GetOppositeDirection(dir)]))
-                   // if (validConnections.Contains(possibleSockets[(dir + 2) % possibleSockets.Length]))
+                    // if (validConnections.Contains(possibleSockets[(dir + 2) % possibleSockets.Length]))
                     {
                         addToList = false;
                         break;
@@ -147,7 +190,7 @@ public class MCCell
                 if (addToList)
                 {
                     validConnections.Add(possibleConnectors[j].sockets[GetOppositeDirection(dir)]);
-                  //  validConnections.Add(possibleConnectors[j].sockets[(dir + 2) % 4]);
+                    //  validConnections.Add(possibleConnectors[j].sockets[(dir + 2) % 4]);
                 }
             }
         }
@@ -182,4 +225,8 @@ public class MCCell
                 return -1;
         }
     }
+
+
+
+
 }

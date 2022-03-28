@@ -12,15 +12,15 @@ public class MCCube
     public MCVertex[] vertices;
     public Vector3Int coords;
     GameObject[] GOs;
-    MCTile[] tiles;
-    public MSVertex temp;
+   // MCTile[] tiles;
+   // public MSVertex temp;
     public MCCell[] cells;
 
     public MCCube()
     {
         GOs = new GameObject[8];
         vertices = new MCVertex[8];
-        tiles = new MCTile[8];
+        //tiles = new MCTile[8];
     }
 
 
@@ -31,37 +31,7 @@ public class MCCube
     }
 
 
-    /// <summary>
-    /// Displays the given tiles if they differ from the tiles that already exist. 
-    /// </summary>
-    /// <param name="newTiles"></param>
-    /// <param name="prefabs"></param>
-    private void DisplayTiles(MCTile[] newTiles, GameObject[] prefabs)
-    {
-        if (newTiles.Length != tiles.Length)
-        {
-            Debug.LogError("Array Length Missmatch");
-            return;
-        }
 
-        for (int i = 0; i < tiles.Length; i++)
-        {
-            if (tiles[i] != newTiles[i])
-            {
-                GameObject.Destroy(GOs[i]);
-                tiles[i] = newTiles[i];
-
-                if (tiles[i] != null && tiles[i].tileType != MCTile.TileType.None)
-                {
-                    Vector3 offset = GetOffset(i);
-
-                    GOs[i] = GameObject.Instantiate(prefabs[(int)tiles[i].tileType - 1], new Vector3(vertices[i].coords.x, vertices[i].coords.y, vertices[i].coords.z) + offset, Quaternion.identity);
-                    GOs[i].transform.eulerAngles = new Vector3(0, 90 * tiles[i].rotationIndex, 0);
-                    // GOs[i].name = tiles[i].tileType.ToString();
-                }
-            }
-        }
-    }
 
 
     /// <summary>
@@ -124,31 +94,20 @@ public class MCCube
         return v;
     }
 
-    /// <summary>
-    /// find out what's changed.
-    /// delete the tiles that have changed.
-    /// set the tiles that have changed.
-    /// display the tiles that have changed.
-    /// </summary>
-    /// <param name="prefabs"></param>
-    public void Update(GameObject[] prefabs)
+   
+    public void UpdateCubesCells()
     {
-        bool[] v = GetVertices();
-        MCTile[] newTiles = GetTileTypes(v);
+        //bool[] v = GetVertices();
+        //MCTile[] newTiles = GetTileTypes(v);
 
         for (int i = 0; i < vertices.Length; i++)
         {
-            if (vertices[i].full)
-            {
+            cells[i].SetTileExists(vertices[i].full);
+           // cells[i].TileExists = vertices[i].full;
 
-            }
-
-            cells[i].TileExists = vertices[i].full;
-
-            FillCellSockets();
         }
 
-        // DisplayTiles(newTiles, prefabs);
+        FillCellSockets();
     }
 
     public void Update2()
@@ -338,12 +297,14 @@ public class MCCube
             filledSockets[3] = vertices[0].full;
             filledSockets[4] = vertices[4].full;
             filledSockets[5] = vertices[0].full;
-            cells[0].filledSockets = filledSockets; 
+            cells[0].filledSockets = filledSockets;
+            filledSockets = new bool[6];
         }
         else
         {
             cells[0].filledSockets = new bool[6];
         }
+
         // cell 1
         if (vertices[1].full)
         {
@@ -353,7 +314,9 @@ public class MCCube
             filledSockets[3] = vertices[1].full;
             filledSockets[4] = vertices[5].full;
             filledSockets[5] = vertices[1].full;
-            cells[1].filledSockets = filledSockets; 
+            cells[1].filledSockets = filledSockets;
+            filledSockets = new bool[6];
+
         }
         else
         {
@@ -369,6 +332,7 @@ public class MCCube
             filledSockets[4] = vertices[6].full;
             filledSockets[5] = vertices[2].full;
             cells[2].filledSockets = filledSockets; 
+            filledSockets = new bool[6];
         }
         else
         {
@@ -384,6 +348,7 @@ public class MCCube
             filledSockets[4] = vertices[7].full;
             filledSockets[5] = vertices[3].full;
             cells[3].filledSockets = filledSockets; 
+            filledSockets = new bool[6];
         }
         else
         {
@@ -399,6 +364,7 @@ public class MCCube
             filledSockets[4] = vertices[4].full;
             filledSockets[5] = vertices[0].full;
             cells[4].filledSockets = filledSockets; 
+            filledSockets = new bool[6];
         }
         else
         {
@@ -409,11 +375,12 @@ public class MCCube
         {
             filledSockets[0] = vertices[5].full;
             filledSockets[1] = vertices[6].full;
-            filledSockets[2] = vertices[1].full;
+            filledSockets[2] = vertices[4].full;
             filledSockets[3] = vertices[5].full;
             filledSockets[4] = vertices[5].full;
             filledSockets[5] = vertices[1].full;
             cells[5].filledSockets = filledSockets; 
+            filledSockets = new bool[6];
         }
         else
         {
@@ -429,6 +396,7 @@ public class MCCube
             filledSockets[4] = vertices[6].full;
             filledSockets[5] = vertices[2].full;
             cells[6].filledSockets = filledSockets; 
+            filledSockets = new bool[6];
         }
         else
         {
@@ -444,6 +412,7 @@ public class MCCube
             filledSockets[4] = vertices[7].full;
             filledSockets[5] = vertices[3].full;
             cells[7].filledSockets = filledSockets; 
+            filledSockets = new bool[6];
         }
         else
         {
@@ -452,4 +421,36 @@ public class MCCube
 #endregion
     }
 
+
+    ///// <summary>
+    ///// Displays the given tiles if they differ from the tiles that already exist. 
+    ///// </summary>
+    ///// <param name="newTiles"></param>
+    ///// <param name="prefabs"></param>
+    //private void DisplayTiles(MCTile[] newTiles, GameObject[] prefabs)
+    //{
+    //    if (newTiles.Length != tiles.Length)
+    //    {
+    //        Debug.LogError("Array Length Missmatch");
+    //        return;
+    //    }
+
+    //    for (int i = 0; i < tiles.Length; i++)
+    //    {
+    //        if (tiles[i] != newTiles[i])
+    //        {
+    //            GameObject.Destroy(GOs[i]);
+    //            tiles[i] = newTiles[i];
+
+    //            if (tiles[i] != null && tiles[i].tileType != MCTile.TileType.None)
+    //            {
+    //                Vector3 offset = GetOffset(i);
+
+    //                GOs[i] = GameObject.Instantiate(prefabs[(int)tiles[i].tileType - 1], new Vector3(vertices[i].coords.x, vertices[i].coords.y, vertices[i].coords.z) + offset, Quaternion.identity);
+    //                GOs[i].transform.eulerAngles = new Vector3(0, 90 * tiles[i].rotationIndex, 0);
+    //                // GOs[i].name = tiles[i].tileType.ToString();
+    //            }
+    //        }
+    //    }
+    //}
 }
