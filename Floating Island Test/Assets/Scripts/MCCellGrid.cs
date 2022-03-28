@@ -12,7 +12,7 @@ public class MCCellGrid
 
     public MCCellGrid(Vector3Int gridSize, List<MCTile> allTiles)
     {
-        this.gridSize = gridSize;
+        this.gridSize = gridSize * 2;
         this.allTiles = allTiles;
         InitialiseGrid();
     }
@@ -21,7 +21,7 @@ public class MCCellGrid
     {
         this.debugPrefab = debugPrefab;
 
-        this.gridSize = gridSize;
+        this.gridSize = gridSize * 2;
         this.allTiles = allTiles;
         InitialiseGrid();
     }
@@ -205,7 +205,7 @@ public class MCCellGrid
             {
                 if (z < gridSize.z && z >= 0)
                 {
-                    return grid[x, y, z]; 
+                    return grid[x, y, z];
                 }
             }
         }

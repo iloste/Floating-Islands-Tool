@@ -11,8 +11,8 @@ public class MCVertexGrid
 
     public MCVertexGrid(Vector3Int gridSize, GameObject prefab)
     {
-        this.gridSize = gridSize;
-        debugVertexPrefab = prefab;
+        this.gridSize = gridSize + new Vector3Int(1, 1, 1);
+        this.debugVertexPrefab = prefab;
         // create parent game object to hold debug objects
         debugParent = GameObject.Instantiate(new GameObject());
         debugParent.name = "Vertex Grid";

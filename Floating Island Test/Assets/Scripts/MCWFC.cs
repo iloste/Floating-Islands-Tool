@@ -12,29 +12,17 @@ public class MCWFC : MonoBehaviour
     [SerializeField] MCTile[] originalTiles;
     List<MCTile> allTiles;
 
-    MCVertexGrid vertexGrid;
-    MCCellGrid cellGrid;
-    MCCubeGrid cubeGrid;
+    MCInterfaceGrid grid;
 
-    [SerializeField] GameObject vertexPrefab;
+    [SerializeField] GameObject vertexDebugPrefab;
     [SerializeField] bool displayVertices;
-    [SerializeField] GameObject cellDebugGO;
+    [SerializeField] GameObject cellDebugPrefab;
     [SerializeField] public bool displayActiveCellLocations;
-    [SerializeField] GameObject cubeLocationPrefab;
+    [SerializeField] GameObject cubeDebugPrefab;
     [SerializeField] bool displayCubeLocations;
 
 
     const int MAX_ROTATIONS = 4;
-
-
-    // to do: 
-    // carry on working through and refactoring. Maybe adding some more debugging options.
-    // the current problem is that the inverted corners are always the same rotation.
-    // You could also add in the up/down connection types.
-    //
-    // Basically, refactor like you did originally. So you have the initialisation region and such.
-
-
 
 
     private void Awake()
@@ -52,11 +40,9 @@ public class MCWFC : MonoBehaviour
 
     void Start()
     {
-        vertexGrid = new MCVertexGrid(gridSize + new Vector3Int(1, 1, 1), vertexPrefab);
         InitialiseTiles();
-        cellGrid = new MCCellGrid(gridSize * 2, allTiles, cellDebugGO);
-        cubeGrid = new MCCubeGrid(gridSize, vertexGrid, cellGrid, cubeLocationPrefab);
 
+        grid = new MCInterfaceGrid(gridSize, allTiles, vertexDebugPrefab, cellDebugPrefab, cubeDebugPrefab);
 
         DisplayVertices();
 
@@ -66,6 +52,7 @@ public class MCWFC : MonoBehaviour
         }
 
 
+        #region Debugs
         //for (int i = 0; i < allTiles.Count; i++)
         //{
         //    GameObject temp = GameObject.Instantiate(allTiles[i].prefab, new Vector3(i * 2, 0, -5), Quaternion.identity);
@@ -77,7 +64,8 @@ public class MCWFC : MonoBehaviour
         //vertices[2, 1, 1].full = true;
         //vertices[2, 1, 2].full = true;
         //UpdateCubesCells();
-        //Iterate(new Vector3Int(1, 1, 1));
+        //Iterate(new Vector3Int(1, 1, 1)); 
+        #endregion
     }
 
 
@@ -215,13 +203,13 @@ public class MCWFC : MonoBehaviour
     /// <summary>
     /// Iterates through the grid, collapsing the cells with the lowest enttopy, then handles the changes that causes in neighbouring cells
     /// </summary>
-    public void Iterate(Vector3Int gridCoords)
+    public void Iterate(Vector3Int coords)
     {
-        cellGrid.ResetPossibilitySpace();
+        grid.ResetPossibilitySpace();
         // converts from vertex position to cell position because there are twice as many cells as there are vertices.
-        gridCoords = gridCoords * 2 - new Vector3Int(1, 1, 1);
-        cellGrid.GetCell(gridCoords).CollapsePossibleTiles();
-        Propagate(gridCoords);
+        coords = coords * 2 - new Vector3Int(1, 1, 1);
+        grid.CollapsePossibleTiles(coords);
+        Propagate(coords);
         DisplayCubes();
     }
 
@@ -233,14 +221,14 @@ public class MCWFC : MonoBehaviour
     private void Propagate(Vector3Int coords)
     {
         Queue<MCCell> q = new Queue<MCCell>();
-        q.Enqueue(cellGrid.GetCell(coords));
+        q.Enqueue(grid.GetCell(coords));
 
         //while still cells to examine
         while (q.Count > 0)
         {
             // take the next cell
             MCCell currentCell = q.Dequeue();
-            MCCell[] neighbours = cellGrid.GetNeighbouringCells(currentCell);
+            MCCell[] neighbours = grid.GetNeighbouringCells(currentCell);
 
             // for each neighbour/direction N\E\S\W\U\D
             for (int i = 0; i < neighbours.Length; i++)
@@ -262,8 +250,7 @@ public class MCWFC : MonoBehaviour
                         for (int j = 0; j < possibleNeighbourTiles.Count; j++)
                         {
                             Connection[] possibleSockets = possibleNeighbourTiles[j].sockets;
-                            int index = (GetOppositeDirection(i));// % possibleSockets.Length;
-                            // int index = (i + oppositeDirModifier) % possibleSockets.Length;
+                            int index = (GetOppositeDirection(i));
 
                             // if possible tile doesn't match, remove it
                             if (!CheckSocketsMatch(possibleSockets[index], validConnections))
@@ -320,8 +307,7 @@ public class MCWFC : MonoBehaviour
         // to do: remove this when the grid doesn't start at 0 on the y
         coords += Vector3Int.up;
 
-        vertexGrid.FillVertex(coords);
-        UpdateCubesCells();
+        grid.FillVertex(coords);
         Iterate(coords);
     }
 
@@ -335,39 +321,30 @@ public class MCWFC : MonoBehaviour
         // debug purposes
         // to do: remove this when the grid doesn't start at 0 on the y
         coords += Vector3Int.up;
+        grid.ClearVertex(coords);
 
-        vertexGrid.ClearVertex(coords);
-
-        UpdateCubesCells();
         Iterate(coords);
 
     }
 
 
-    /// <summary>
-    /// Goes through each cell and calculates which tiles it will show.
-    /// </summary>
-    private void UpdateCubesCells()
-    {
-        cubeGrid.UpdateCubesCells();
-    }
 
 
     private void DisplayCubes()
     {
-        cubeGrid.DisplayCubes();
+        grid.DisplayCubes();
     }
 
 
     private void DisplayVertices()
     {
-        vertexGrid.DisplayVertices(displayVertices);
+        grid.DisplayVertices(displayVertices);
     }
 
 
     private void DisplayCubeLocations()
     {
-        cubeGrid.DisplayCubes();
+        grid.DisplayCubes();
     }
 
     #endregion

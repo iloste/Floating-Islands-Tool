@@ -100,6 +100,7 @@ public class MCCube
         //bool[] v = GetVertices();
         //MCTile[] newTiles = GetTileTypes(v);
 
+        Debug.Log(coords);
         for (int i = 0; i < vertices.Length; i++)
         {
             cells[i].SetTileExists(vertices[i].full);
