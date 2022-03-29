@@ -22,6 +22,7 @@ public class MCInterfaceGrid : MonoBehaviour
     {
         vertexGrid.FillVertex(coords);
         cubeGrid.UpdateCubesCells();
+        cellGrid.ResetPossibilitySpace();
     }
 
 
@@ -40,14 +41,18 @@ public class MCInterfaceGrid : MonoBehaviour
 
 
     #region Cells
-    public void ResetPossibilitySpace()
-    {
-        cellGrid.ResetPossibilitySpace();
-    }
+    //public void ResetPossibilitySpace()
+    //{
+    //    cellGrid.ResetPossibilitySpace();
+    //}
 
     public void CollapsePossibleTiles(Vector3Int coords)
     {
-        cellGrid.GetCell(coords).CollapsePossibleTiles();
+
+        if (!cellGrid.GetCell(coords).Collapsed())
+        {
+            cellGrid.GetCell(coords).WaveFunctionCollapse(); 
+        }
     }
 
     public MCCell GetCell(Vector3Int coords)
@@ -58,6 +63,18 @@ public class MCInterfaceGrid : MonoBehaviour
     public MCCell[] GetNeighbouringCells(MCCell cell)
     {
         return cellGrid.GetNeighbouringCells(cell);
+    }
+
+
+    public bool GridCollapsed()
+    {
+        return cellGrid.GridCollapsed();
+    }
+
+
+    public MCCell FindUncollapsedCell()
+    {
+        return cellGrid.GetLowestEntropy();
     }
     #endregion
 

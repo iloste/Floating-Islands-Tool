@@ -10,28 +10,30 @@ public class MCCube
     /// 3 = bottom front right. 4, 5, 6, 7 repeats this pattern but for the top.
     /// </summary>
     public MCVertex[] vertices;
-    public Vector3Int coords;
-    GameObject[] GOs;
-   // MCTile[] tiles;
-   // public MSVertex temp;
     public MCCell[] cells;
+    GameObject[] GOs;
+    public Vector3Int coords;
 
     public MCCube()
     {
-        GOs = new GameObject[8];
-        vertices = new MCVertex[8];
-        //tiles = new MCTile[8];
+        Initialise();
     }
 
+
+    private void Initialise()
+    {
+        GOs = new GameObject[8];
+        vertices = new MCVertex[8];
+    }
 
 
     public void SetVertices(ref MCVertex vertex, int num)
     {
-        vertices[num] = vertex;
+        if (num >= 0 && num < vertices.Length)
+        {
+            vertices[num] = vertex;
+        }
     }
-
-
-
 
 
     /// <summary>
@@ -41,7 +43,7 @@ public class MCCube
     /// <returns></returns>
     private Vector3 GetOffset(int vertexPos)
     {
-        Vector3 offset = Vector3.zero;
+        Vector3 offset;
 
         switch (vertexPos)
         {
@@ -82,7 +84,7 @@ public class MCCube
     /// returns a bool[] for which vertices are full and which aren't
     /// </summary>
     /// <returns></returns>
-    private bool[] GetVertices()
+    private bool[] GetFilledVertices()
     {
         bool[] v = new bool[vertices.Length];
 
@@ -94,22 +96,18 @@ public class MCCube
         return v;
     }
 
-   
+
     public void UpdateCubesCells()
     {
-        //bool[] v = GetVertices();
-        //MCTile[] newTiles = GetTileTypes(v);
-
-        Debug.Log(coords);
         for (int i = 0; i < vertices.Length; i++)
         {
             cells[i].SetTileExists(vertices[i].full);
-           // cells[i].TileExists = vertices[i].full;
-
         }
 
         FillCellSockets();
     }
+
+
 
     public void Update2()
     {
@@ -117,11 +115,11 @@ public class MCCube
         {
             if (GOs[i] != null)
             {
-                GameObject.Destroy(GOs[i]); 
+                GameObject.Destroy(GOs[i]);
             }
         }
 
-        bool[] v = GetVertices();
+        bool[] v = GetFilledVertices();
         MCTile[] newTiles = GetTileTypes(v);
 
 
@@ -288,7 +286,7 @@ public class MCCube
         // if the given vertex is full, there is a neighbour.
 
         #region fill cell sockets
-        // only fill if the tile will exist
+        // only fill if the tile exists
         // cell 0
         if (vertices[0].full)
         {
@@ -298,12 +296,12 @@ public class MCCube
             filledSockets[3] = vertices[0].full;
             filledSockets[4] = vertices[4].full;
             filledSockets[5] = vertices[0].full;
-            cells[0].filledSockets = filledSockets;
+            cells[0].SetValidConnections(filledSockets);
             filledSockets = new bool[6];
         }
         else
         {
-            cells[0].filledSockets = new bool[6];
+            cells[0].SetValidConnections(new bool[6]);
         }
 
         // cell 1
@@ -315,14 +313,15 @@ public class MCCube
             filledSockets[3] = vertices[1].full;
             filledSockets[4] = vertices[5].full;
             filledSockets[5] = vertices[1].full;
-            cells[1].filledSockets = filledSockets;
+            cells[1].SetValidConnections(filledSockets);
             filledSockets = new bool[6];
 
         }
         else
         {
-            cells[1].filledSockets = new bool[6];
+            cells[1].SetValidConnections(new bool[6]);
         }
+
         // cell 2
         if (vertices[2].full)
         {
@@ -332,13 +331,14 @@ public class MCCube
             filledSockets[3] = vertices[1].full;
             filledSockets[4] = vertices[6].full;
             filledSockets[5] = vertices[2].full;
-            cells[2].filledSockets = filledSockets; 
+            cells[2].SetValidConnections(filledSockets);
             filledSockets = new bool[6];
         }
         else
         {
-            cells[2].filledSockets = new bool[6];
+            cells[2].SetValidConnections(new bool[6]);
         }
+
         // cell 3
         if (vertices[3].full)
         {
@@ -348,13 +348,14 @@ public class MCCube
             filledSockets[3] = vertices[0].full;
             filledSockets[4] = vertices[7].full;
             filledSockets[5] = vertices[3].full;
-            cells[3].filledSockets = filledSockets; 
+            cells[3].SetValidConnections(filledSockets);
             filledSockets = new bool[6];
         }
         else
         {
-            cells[3].filledSockets = new bool[6];
+            cells[3].SetValidConnections(new bool[6]);
         }
+
         // cell 4
         if (vertices[4].full)
         {
@@ -364,13 +365,14 @@ public class MCCube
             filledSockets[3] = vertices[4].full;
             filledSockets[4] = vertices[4].full;
             filledSockets[5] = vertices[0].full;
-            cells[4].filledSockets = filledSockets; 
+            cells[4].SetValidConnections(filledSockets);
             filledSockets = new bool[6];
         }
         else
         {
-            cells[4].filledSockets = new bool[6];
+            cells[4].SetValidConnections(new bool[6]);
         }
+
         // cell 5
         if (vertices[5].full)
         {
@@ -380,13 +382,14 @@ public class MCCube
             filledSockets[3] = vertices[5].full;
             filledSockets[4] = vertices[5].full;
             filledSockets[5] = vertices[1].full;
-            cells[5].filledSockets = filledSockets; 
+            cells[5].SetValidConnections(filledSockets);
             filledSockets = new bool[6];
         }
         else
         {
-            cells[5].filledSockets = new bool[6];
+            cells[5].SetValidConnections(new bool[6]);
         }
+
         // cell 6
         if (vertices[6].full)
         {
@@ -396,13 +399,14 @@ public class MCCube
             filledSockets[3] = vertices[5].full;
             filledSockets[4] = vertices[6].full;
             filledSockets[5] = vertices[2].full;
-            cells[6].filledSockets = filledSockets; 
+            cells[6].SetValidConnections(filledSockets);
             filledSockets = new bool[6];
         }
         else
         {
-            cells[6].filledSockets = new bool[6];
+            cells[6].SetValidConnections(new bool[6]);
         }
+
         // cell 7
         if (vertices[7].full)
         {
@@ -412,46 +416,14 @@ public class MCCube
             filledSockets[3] = vertices[4].full;
             filledSockets[4] = vertices[7].full;
             filledSockets[5] = vertices[3].full;
-            cells[7].filledSockets = filledSockets; 
+            cells[7].SetValidConnections(filledSockets);
             filledSockets = new bool[6];
         }
         else
         {
-            cells[7].filledSockets = new bool[6];
+            cells[7].SetValidConnections(new bool[6]);
         }
-#endregion
+
+        #endregion
     }
-
-
-    ///// <summary>
-    ///// Displays the given tiles if they differ from the tiles that already exist. 
-    ///// </summary>
-    ///// <param name="newTiles"></param>
-    ///// <param name="prefabs"></param>
-    //private void DisplayTiles(MCTile[] newTiles, GameObject[] prefabs)
-    //{
-    //    if (newTiles.Length != tiles.Length)
-    //    {
-    //        Debug.LogError("Array Length Missmatch");
-    //        return;
-    //    }
-
-    //    for (int i = 0; i < tiles.Length; i++)
-    //    {
-    //        if (tiles[i] != newTiles[i])
-    //        {
-    //            GameObject.Destroy(GOs[i]);
-    //            tiles[i] = newTiles[i];
-
-    //            if (tiles[i] != null && tiles[i].tileType != MCTile.TileType.None)
-    //            {
-    //                Vector3 offset = GetOffset(i);
-
-    //                GOs[i] = GameObject.Instantiate(prefabs[(int)tiles[i].tileType - 1], new Vector3(vertices[i].coords.x, vertices[i].coords.y, vertices[i].coords.z) + offset, Quaternion.identity);
-    //                GOs[i].transform.eulerAngles = new Vector3(0, 90 * tiles[i].rotationIndex, 0);
-    //                // GOs[i].name = tiles[i].tileType.ToString();
-    //            }
-    //        }
-    //    }
-    //}
 }

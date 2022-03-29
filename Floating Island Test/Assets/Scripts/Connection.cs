@@ -7,7 +7,7 @@ public struct Connection
 {
 
     public int number;
-    public Tile.SpecialConnection spConnection;
+    public MCTile.SpecialConnection spConnection;
 
 
     /// <summary>
@@ -17,12 +17,19 @@ public struct Connection
     {
         if (connection.number == this.number)
         {
-            if (connection.spConnection == Tile.SpecialConnection.Symmetrical && this.spConnection == Tile.SpecialConnection.Symmetrical)
+            if (connection.spConnection == MCTile.SpecialConnection.Symmetrical && this.spConnection == MCTile.SpecialConnection.Symmetrical)
             {
                 return true;
             }
-            else if (connection.spConnection == Tile.SpecialConnection.Flipped && this.spConnection == Tile.SpecialConnection.None ||
-                connection.spConnection == Tile.SpecialConnection.None && this.spConnection == Tile.SpecialConnection.Flipped)
+            else if (connection.spConnection == MCTile.SpecialConnection.Flipped && this.spConnection == MCTile.SpecialConnection.None ||
+                connection.spConnection == MCTile.SpecialConnection.None && this.spConnection == MCTile.SpecialConnection.Flipped)
+            {
+                return true;
+            }
+            else if (connection.spConnection == MCTile.SpecialConnection.VerticalRotated0 && this.spConnection == MCTile.SpecialConnection.VerticalRotated0 ||
+                connection.spConnection == MCTile.SpecialConnection.VerticalRotated1 && this.spConnection == MCTile.SpecialConnection.VerticalRotated1 ||
+                connection.spConnection == MCTile.SpecialConnection.VerticalRotated2 && this.spConnection == MCTile.SpecialConnection.VerticalRotated2 ||
+                connection.spConnection == MCTile.SpecialConnection.VerticalRotated3 && this.spConnection == MCTile.SpecialConnection.VerticalRotated3)
             {
                 return true;
             }
@@ -45,7 +52,7 @@ public struct Connection
     }
 
 
-    public static bool operator != (Connection a, Connection b)
+    public static bool operator !=(Connection a, Connection b)
     {
         if (a.number != b.number || a.spConnection != b.spConnection)
         {
@@ -55,7 +62,7 @@ public struct Connection
         return false;
     }
 
- 
+
 
 
     public override bool Equals(object obj) => this.Equals((Connection)obj);

@@ -16,15 +16,15 @@ MonoBehaviour:
   tileType: 0
   sockets:
   - number: 1
-    spConnection: 0
-  - number: 1
     spConnection: 1
   - number: 2
     spConnection: 2
   - number: 2
     spConnection: 2
+  - number: 1
+    spConnection: 0
   - number: -1
     spConnection: 0
   - number: 7
-    spConnection: 2
+    spConnection: 3
   prefab: {fileID: 1765917047037707972, guid: 6119f03fb9bb3494da0c713f4249ea06, type: 3}

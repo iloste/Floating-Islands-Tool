@@ -52,10 +52,10 @@ public class MCCellGrid
 
 
     /// <summary>
-    /// returns true if all cells in the grid have only 1 possible tile. Else returns false.
+    /// returns true if all active cells in the grid have only 1 possible tile. Else returns false.
     /// </summary>
     /// <returns></returns>
-    public bool WaveFunctionCollapsed()
+    public bool GridCollapsed()
     {
         for (int x = 0; x < grid.GetLength(0); x++)
         {
@@ -63,9 +63,12 @@ public class MCCellGrid
             {
                 for (int z = 0; z < grid.GetLength(2); z++)
                 {
-                    if (grid[x, y, z].possibleTiles.Count > 1)
+                    if (grid[x, y, z].TileExists)
                     {
-                        return false;
+                        if (grid[x, y, z].possibleTiles.Count > 1)
+                        {
+                            return false;
+                        } 
                     }
                 }
             }
@@ -78,9 +81,10 @@ public class MCCellGrid
     /// <summary>
     /// Returns the coordinates of the cell with the fewest possible tiles above 1.
     /// </summary>
-    public Vector3Int GetLowestEntropy()
+    public MCCell GetLowestEntropy()
     {
         Vector3Int lowestIndex = Vector3Int.zero;
+        MCCell lowestEntropy = null;
 
         for (int x = 0; x < grid.GetLength(0); x++)
         {
@@ -88,22 +92,27 @@ public class MCCellGrid
             {
                 for (int z = 0; z < grid.GetLength(2); z++)
                 {
-                    if (grid[x, y, z].possibleTiles.Count > 1)
+                    if (grid[x, y, z].TileExists)
                     {
-                        // todo return coords if the value is two else do this? That might be quicker because 2 is the lowest value needed for returning.
-                        if (grid[x, y, z].possibleTiles.Count < grid[lowestIndex.x, lowestIndex.y, lowestIndex.z].possibleTiles.Count ||
-                            grid[lowestIndex.x, lowestIndex.y, lowestIndex.z].possibleTiles.Count <= 1)
+                        if (grid[x, y, z].possibleTiles.Count > 1)
                         {
-                            lowestIndex.x = x;
-                            lowestIndex.y = y;
-                            lowestIndex.z = z;
+                            if (lowestEntropy == null || grid[x, y, z].possibleTiles.Count < lowestEntropy.possibleTiles.Count)
+                            {
+                                lowestEntropy = grid[x, y, z];
+                            }
+
+                            // can't be lower than 2 without being collapsed
+                            if (lowestEntropy.possibleTiles.Count == 2)
+                            {
+                                return lowestEntropy;
+                            }
                         }
                     }
                 }
             }
         }
 
-        return lowestIndex;
+        return lowestEntropy;
     }
 
     /// <summary>
@@ -230,7 +239,8 @@ public class MCCellGrid
                     {
 
                     }
-                    grid[x, y, z].ResetPossibleTiles(allTiles);
+                    grid[x, y, z].ResetPossiblitySpace();
+                    //grid[x, y, z].ResetPossibleTiles(allTiles);
                 }
             }
         }

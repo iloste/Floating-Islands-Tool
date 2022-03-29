@@ -4,26 +4,49 @@ using UnityEngine;
 
 public class MCCell
 {
-    public bool[] filledSockets { get; set; }
+    public bool[] validConnections { get; private set; }
     public Connection[] connections;
+
+    private List<MCTile> allTiles;
     public List<MCTile> possibleTiles;
-    public List<MCTile> impossibleTiles;
     public Vector3Int coords;
     public Vector3 worldPosition;
     public GameObject debugGO;
+    public bool visited = false;
+
     public bool TileExists { get; private set; }
 
 
     public MCCell(List<MCTile> allTiles, Vector3Int coords)
     {
-        this.possibleTiles = allTiles;
-        impossibleTiles = new List<MCTile>();
+        Initialise(allTiles, coords);
+    }
+
+
+    private void Initialise(List<MCTile> allTiles, Vector3Int coords)
+    {
+        this.allTiles = allTiles;
+        possibleTiles = new List<MCTile>();
+        //  impossibleTiles = new List<MCTile>();
+
         this.coords = coords;
         worldPosition = new Vector3(coords.x / 2f, coords.y / 2f, coords.z / 2f);
-        filledSockets = new bool[6];
+
+        validConnections = new bool[6];
         connections = new Connection[6];
     }
 
+
+    public void SetValidConnections(bool[] validConnections)
+    {
+        this.validConnections = validConnections;
+    }
+
+
+    /// <summary>
+    /// Returns true if there is only one possible tile left
+    /// </summary>
+    /// <returns></returns>
     public bool Collapsed()
     {
         if (possibleTiles.Count > 1)
@@ -58,30 +81,26 @@ public class MCCell
         TileExists = exists;
     }
 
+
     public void RemovePossibleTile(int index)
     {
         if (index < possibleTiles.Count)
         {
-            impossibleTiles.Add(possibleTiles[index]);
             possibleTiles.RemoveAt(index);
         }
     }
 
+
     /// <summary>
     /// Picks one of it's possible tiles to be the set tile.
     /// </summary>
-    public void CollapsePossibleTiles()
+    public void WaveFunctionCollapse()
     {
-        // removes any possible tile that doesn't match the N/E/S/W/U/D connections that the cell has. 
-        //(I.e. if the cell connects north and east, the possible tiles have to connect north and east.
-        for (int i = 0; i < possibleTiles.Count; i++)
+        //RemoveTilesThatDontFit();
+
+        if (coords == new Vector3Int(2, 1, 2))
         {
-            if (!CheckPossibleTileFitsWithAllotedSockets(possibleTiles[i]))
-            {
-                impossibleTiles.Add(possibleTiles[i]);
-                possibleTiles.RemoveAt(i);
-                i--;
-            }
+
         }
 
         if (possibleTiles.Count > 0)
@@ -91,33 +110,44 @@ public class MCCell
             MCTile chosen = possibleTiles[random];
             possibleTiles.RemoveAt(random);
 
-            // stores the rest in impossibleTiles
-            for (int i = 0; i < possibleTiles.Count; i++)
-            {
-                impossibleTiles.Add(possibleTiles[i]);
-            }
-
             // stores the chosen tile in possible tiles
             possibleTiles = new List<MCTile>();
-            possibleTiles.Add(chosen); 
+            possibleTiles.Add(chosen);
         }
     }
 
 
     /// <summary>
-    /// Returns true if the given tile has non-null sockets in the same place directions as the cell.
+    /// removes any possible tile that doesn't match the valid N/E/S/W/U/D connections that the cell has. 
+    /// (I.e. if the cell connects north and east, the possible tiles have to connect north and east.
+    /// </summary>
+    private void RemoveTilesThatDontFit()
+    {
+        for (int i = 0; i < possibleTiles.Count; i++)
+        {
+            if (!TileFitsValidConnections(possibleTiles[i]))
+            {
+                // impossibleTiles.Add(possibleTiles[i]);
+                possibleTiles.RemoveAt(i);
+                i--;
+            }
+        }
+    }
+
+
+    /// <summary>
+    /// Returns true if the given tile has connections in the same directions as the cell has.
     /// </summary>
     /// <param name="possibleTile"></param>
     /// <returns></returns>
-    private bool CheckPossibleTileFitsWithAllotedSockets(MCTile possibleTile)
+    private bool TileFitsValidConnections(MCTile possibleTile)
     {
-        // to do: change the name to something more sensible
         Connection[] connectors = possibleTile.sockets;
 
         for (int i = 0; i < connections.Length; i++)
         {
-            if (connectors[i].number == -1 && filledSockets[i] ||
-                connectors[i].number != -1 && !filledSockets[i])
+            if (connectors[i].number == -1 && validConnections[i] ||
+                connectors[i].number != -1 && !validConnections[i])
             {
                 return false;
             }
@@ -127,37 +157,10 @@ public class MCCell
     }
 
 
-    /// <summary>
-    /// Resets possible tiles to all tiles
-    /// </summary>
-    public void ResetPossibleTiles(List<MCTile> tiles)
+    public void ResetPossiblitySpace()
     {
-        impossibleTiles = new List<MCTile>();
-        possibleTiles = new List<MCTile>(tiles);
-
-
-        for (int i = 0; i < possibleTiles.Count; i++)
-        {
-            if (!CheckPossibleTileFitsWithAllotedSockets(possibleTiles[i]))
-            {
-                impossibleTiles.Add(possibleTiles[i]);
-                possibleTiles.RemoveAt(i);
-                i--;
-            }
-        }
-
-        //List<MCTile> temp = new List<MCTile>();
-
-        //for (int i = 0; i < possibleTiles.Count; i++)
-        //{
-        //    temp.Add(possibleTiles[i]);
-        //}
-        //for (int i = 0; i < impossibleTiles.Count; i++)
-        //{
-        //    temp.Add(impossibleTiles[i]);
-        //}
-
-        //possibleTiles = temp;
+        possibleTiles = new List<MCTile>(allTiles);
+        RemoveTilesThatDontFit();
     }
 
 
@@ -226,8 +229,4 @@ public class MCCell
                 return -1;
         }
     }
-
-
-
-
 }
