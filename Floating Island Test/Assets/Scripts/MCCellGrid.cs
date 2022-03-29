@@ -96,15 +96,18 @@ public class MCCellGrid
                     {
                         if (grid[x, y, z].possibleTiles.Count > 1)
                         {
-                            if (lowestEntropy == null || grid[x, y, z].possibleTiles.Count < lowestEntropy.possibleTiles.Count)
+                            if (!grid[x, y, z].visited)
                             {
-                                lowestEntropy = grid[x, y, z];
-                            }
+                                if (lowestEntropy == null || grid[x, y, z].possibleTiles.Count < lowestEntropy.possibleTiles.Count)
+                                {
+                                    lowestEntropy = grid[x, y, z];
+                                }
 
-                            // can't be lower than 2 without being collapsed
-                            if (lowestEntropy.possibleTiles.Count == 2)
-                            {
-                                return lowestEntropy;
+                                // can't be lower than 2 without being collapsed
+                                if (lowestEntropy.possibleTiles.Count == 2)
+                                {
+                                    return lowestEntropy;
+                                } 
                             }
                         }
                     }
@@ -185,6 +188,15 @@ public class MCCellGrid
         }
 
         #endregion
+
+        for (int i = 0; i < cell.validConnections.Length; i++)
+        {
+            if (cell.validConnections[i] == false)
+            {
+                neighbours[i] = null;
+            }
+        }
+
 
         return neighbours;
     }

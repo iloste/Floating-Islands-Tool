@@ -267,8 +267,14 @@ public class MCWFC : MonoBehaviour
             {
                 if (neighbours[direction] != null)
                 {
+                    bool changesMade = false;
+
                     if (!neighbours[direction].Collapsed())
                     {
+                        if (neighbours[direction].coords == new Vector3Int(2, 1, 3))
+                        {
+
+                        }
                         // remove neighbours possible tiles based on current cells tiles
                         List<Connection> validConnections = currentCell.GetValidConnections(direction);
                         List<MCTile> possibleNeighbourTiles = neighbours[direction].possibleTiles;
@@ -284,13 +290,23 @@ public class MCWFC : MonoBehaviour
                             {
                                 possibleNeighbourTiles.RemoveAt(i);
                                 i--;
+                                changesMade = true;
                             }
                         }
                     }
 
-                    if (!CellComplete(neighbours[direction]))
+                    //if (!q.Contains( neighbours[direction]))
+                    //{
+                    //    if (!CellComplete(neighbours[direction]))
+                    //    {
+                    //        q.Enqueue(neighbours[direction]);
+                    //    }
+                    //}
+
+                    if (changesMade)
                     {
                         q.Enqueue(neighbours[direction]);
+                        neighbours[direction].visited = true;
                     }
                 }
             }

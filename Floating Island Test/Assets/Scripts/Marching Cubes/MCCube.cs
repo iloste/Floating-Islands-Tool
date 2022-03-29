@@ -276,6 +276,41 @@ public class MCCube
     }
 
 
+    /// <summary>
+    /// if N/E/S/W are true, up and down are false
+    /// </summary>
+    /// <param name="filledSockets"></param>
+    private bool[] MiddleAmmendments(bool[] filledSockets, int pos)
+    {
+        //if (filledSockets[0] &&filledSockets[1] &&filledSockets[2] &&filledSockets[3])
+        //{
+        //    if (pos < 4)
+        //    {
+        //        if (vertices[0].full && vertices[1].full && vertices[2].full && vertices[3].full)
+        //        {
+
+        //        }
+        //    }
+
+        //    filledSockets[4] = false;
+        //    filledSockets[5] = false;
+        //}
+
+        if (vertices[0].full && vertices[1].full && vertices[2].full && vertices[3].full)
+        {
+            filledSockets[4] = false;
+            filledSockets[5] = false;
+        }
+
+        if (vertices[4].full && vertices[5].full && vertices[6].full && vertices[7].full)
+        {
+            filledSockets[4] = false;
+            filledSockets[5] = false;
+        }
+
+        return filledSockets;
+    }
+
 
     private void FillCellSockets()
     {
@@ -296,6 +331,7 @@ public class MCCube
             filledSockets[3] = vertices[0].full;
             filledSockets[4] = vertices[4].full;
             filledSockets[5] = vertices[0].full;
+            filledSockets = MiddleAmmendments(filledSockets, 0);
             cells[0].SetValidConnections(filledSockets);
             filledSockets = new bool[6];
         }
@@ -313,6 +349,7 @@ public class MCCube
             filledSockets[3] = vertices[1].full;
             filledSockets[4] = vertices[5].full;
             filledSockets[5] = vertices[1].full;
+            filledSockets = MiddleAmmendments(filledSockets, 1);
             cells[1].SetValidConnections(filledSockets);
             filledSockets = new bool[6];
 
@@ -331,6 +368,7 @@ public class MCCube
             filledSockets[3] = vertices[1].full;
             filledSockets[4] = vertices[6].full;
             filledSockets[5] = vertices[2].full;
+            filledSockets = MiddleAmmendments(filledSockets, 2);
             cells[2].SetValidConnections(filledSockets);
             filledSockets = new bool[6];
         }
@@ -348,6 +386,7 @@ public class MCCube
             filledSockets[3] = vertices[0].full;
             filledSockets[4] = vertices[7].full;
             filledSockets[5] = vertices[3].full;
+            filledSockets = MiddleAmmendments(filledSockets, 3);
             cells[3].SetValidConnections(filledSockets);
             filledSockets = new bool[6];
         }
@@ -365,6 +404,7 @@ public class MCCube
             filledSockets[3] = vertices[4].full;
             filledSockets[4] = vertices[4].full;
             filledSockets[5] = vertices[0].full;
+            filledSockets = MiddleAmmendments(filledSockets, 4);
             cells[4].SetValidConnections(filledSockets);
             filledSockets = new bool[6];
         }
@@ -382,6 +422,7 @@ public class MCCube
             filledSockets[3] = vertices[5].full;
             filledSockets[4] = vertices[5].full;
             filledSockets[5] = vertices[1].full;
+            filledSockets = MiddleAmmendments(filledSockets, 5);
             cells[5].SetValidConnections(filledSockets);
             filledSockets = new bool[6];
         }
@@ -399,6 +440,7 @@ public class MCCube
             filledSockets[3] = vertices[5].full;
             filledSockets[4] = vertices[6].full;
             filledSockets[5] = vertices[2].full;
+            filledSockets = MiddleAmmendments(filledSockets, 6);
             cells[6].SetValidConnections(filledSockets);
             filledSockets = new bool[6];
         }
@@ -416,6 +458,7 @@ public class MCCube
             filledSockets[3] = vertices[4].full;
             filledSockets[4] = vertices[7].full;
             filledSockets[5] = vertices[3].full;
+            filledSockets = MiddleAmmendments(filledSockets, 7);
             cells[7].SetValidConnections(filledSockets);
             filledSockets = new bool[6];
         }
