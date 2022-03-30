@@ -68,7 +68,7 @@ public class MCCellGrid
                         if (grid[x, y, z].possibleTiles.Count > 1)
                         {
                             return false;
-                        } 
+                        }
                     }
                 }
             }
@@ -96,18 +96,15 @@ public class MCCellGrid
                     {
                         if (grid[x, y, z].possibleTiles.Count > 1)
                         {
-                            if (!grid[x, y, z].visited)
+                            if (lowestEntropy == null || grid[x, y, z].possibleTiles.Count < lowestEntropy.possibleTiles.Count)
                             {
-                                if (lowestEntropy == null || grid[x, y, z].possibleTiles.Count < lowestEntropy.possibleTiles.Count)
-                                {
-                                    lowestEntropy = grid[x, y, z];
-                                }
+                                lowestEntropy = grid[x, y, z];
+                            }
 
-                                // can't be lower than 2 without being collapsed
-                                if (lowestEntropy.possibleTiles.Count == 2)
-                                {
-                                    return lowestEntropy;
-                                } 
+                            // can't be lower than 2 without being collapsed
+                            if (lowestEntropy.possibleTiles.Count == 2)
+                            {
+                                return lowestEntropy;
                             }
                         }
                     }

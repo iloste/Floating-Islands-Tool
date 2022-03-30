@@ -48,10 +48,9 @@ public class MCInterfaceGrid : MonoBehaviour
 
     public void CollapsePossibleTiles(Vector3Int coords)
     {
-
         if (!cellGrid.GetCell(coords).Collapsed())
         {
-            cellGrid.GetCell(coords).WaveFunctionCollapse(); 
+            cellGrid.GetCell(coords).WaveFunctionCollapse(GetNeighbouringCells(GetCell(coords))); 
         }
     }
 

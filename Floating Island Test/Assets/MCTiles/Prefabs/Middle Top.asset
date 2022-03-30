@@ -25,6 +25,6 @@ MonoBehaviour:
     spConnection: 2
   - number: -1
     spConnection: 0
-  - number: -1
-    spConnection: 0
+  - number: 99
+    spConnection: 2
   prefab: {fileID: 870334868605437551, guid: a53ec25b5d45cf84b81a494e73dddd53, type: 3}

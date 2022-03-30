@@ -4,7 +4,16 @@ using UnityEngine;
 
 public class MCCell
 {
+
+    public enum MCValidConnection
+    {
+        Nothing,
+        Something,
+        Middle,
+    }
+
     public bool[] validConnections { get; private set; }
+    public MCValidConnection[] validConnections2 { get; private set; }
     public Connection[] connections;
 
     private List<MCTile> allTiles;
@@ -33,6 +42,7 @@ public class MCCell
         worldPosition = new Vector3(coords.x / 2f, coords.y / 2f, coords.z / 2f);
 
         validConnections = new bool[6];
+        validConnections2 = new MCValidConnection[6];
         connections = new Connection[6];
     }
 
@@ -40,6 +50,11 @@ public class MCCell
     public void SetValidConnections(bool[] validConnections)
     {
         this.validConnections = validConnections;
+    }
+
+    public void SetValidConnections(MCValidConnection[] validConnections)
+    {
+        this.validConnections2 = validConnections;
     }
 
 
@@ -94,13 +109,32 @@ public class MCCell
     /// <summary>
     /// Picks one of it's possible tiles to be the set tile.
     /// </summary>
-    public void WaveFunctionCollapse()
+    public void WaveFunctionCollapse(MCCell[] neighbours)
     {
-        //RemoveTilesThatDontFit();
 
-        if (coords == new Vector3Int(2, 1, 2))
+        // removes tiles that won't fit based on neighbour possible tiles
+        for (int direction = 0; direction < neighbours.Length; direction++)
         {
+            if (neighbours[direction] != null)
+            {
+                // remove neighbours possible tiles based on current cells tiles
+                int oppositeDirection = GetOppositeDirection(direction);
 
+                List<Connection> neighboursValidConnections = neighbours[direction].GetValidConnections(oppositeDirection);
+
+                // for each nighbour tile
+                // if it's connection isn't in valid connections, remove it.
+                for (int i = 0; i < possibleTiles.Count; i++)
+                {
+                    Connection nextConnection = possibleTiles[i].sockets[direction];
+
+                    if (!CheckSocketsMatch(nextConnection, neighboursValidConnections))
+                    {
+                        possibleTiles.RemoveAt(i);
+                        i--;
+                    }
+                }
+            }
         }
 
         if (possibleTiles.Count > 0)
@@ -114,6 +148,25 @@ public class MCCell
             possibleTiles = new List<MCTile>();
             possibleTiles.Add(chosen);
         }
+
+
+    }
+
+
+    /// <summary>
+    /// returns true if connection a fits anything in list b
+    /// </summary>
+    private bool CheckSocketsMatch(Connection a, List<Connection> b)
+    {
+        for (int i = 0; i < b.Count; i++)
+        {
+            if (a == b[i])
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
 
@@ -125,7 +178,8 @@ public class MCCell
     {
         for (int i = 0; i < possibleTiles.Count; i++)
         {
-            if (!TileFitsValidConnections(possibleTiles[i]))
+            //if (!TileFitsValidConnections(possibleTiles[i]))
+            if (!TileFitsValidConnections2(possibleTiles[i]))
             {
                 // impossibleTiles.Add(possibleTiles[i]);
                 possibleTiles.RemoveAt(i);
@@ -155,11 +209,37 @@ public class MCCell
 
         return true;
     }
+    private bool TileFitsValidConnections2(MCTile possibleTile)
+    {
+        Connection[] connectors = possibleTile.sockets;
+
+        for (int i = 0; i < connections.Length; i++)
+        {
+            if ((connectors[i].number == 99 && validConnections2[i] != MCValidConnection.Middle))
+            {
+                return false;
+            }
+            else if ((connectors[i].number == -1 && validConnections2[i] != MCValidConnection.Nothing))
+            {
+                return false;
+            }
+            else if ((connectors[i].number != -1 && connectors[i].number != 99) && validConnections2[i] != MCValidConnection.Something)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
 
 
     public void ResetPossiblitySpace()
     {
         possibleTiles = new List<MCTile>(allTiles);
+        if (coords == new Vector3Int(2, 2, 2))
+        {
+
+        }
         RemoveTilesThatDontFit();
     }
 

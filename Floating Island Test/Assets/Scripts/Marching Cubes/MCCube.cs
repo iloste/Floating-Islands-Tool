@@ -282,20 +282,6 @@ public class MCCube
     /// <param name="filledSockets"></param>
     private bool[] MiddleAmmendments(bool[] filledSockets, int pos)
     {
-        //if (filledSockets[0] &&filledSockets[1] &&filledSockets[2] &&filledSockets[3])
-        //{
-        //    if (pos < 4)
-        //    {
-        //        if (vertices[0].full && vertices[1].full && vertices[2].full && vertices[3].full)
-        //        {
-
-        //        }
-        //    }
-
-        //    filledSockets[4] = false;
-        //    filledSockets[5] = false;
-        //}
-
         if (vertices[0].full && vertices[1].full && vertices[2].full && vertices[3].full)
         {
             filledSockets[4] = false;
@@ -306,6 +292,24 @@ public class MCCube
         {
             filledSockets[4] = false;
             filledSockets[5] = false;
+        }
+
+        return filledSockets;
+    }
+
+
+    private MCCell.MCValidConnection[] MiddleAmmendments(MCCell.MCValidConnection[] filledSockets, int pos)
+    {
+        if (vertices[0].full && vertices[1].full && vertices[2].full && vertices[3].full)
+        {
+            filledSockets[4] = MCCell.MCValidConnection.Nothing;
+            filledSockets[5] = MCCell.MCValidConnection.Middle;
+        }
+
+        if (vertices[4].full && vertices[5].full && vertices[6].full && vertices[7].full)
+        {
+            filledSockets[4] = MCCell.MCValidConnection.Middle;
+            filledSockets[5] = MCCell.MCValidConnection.Nothing;
         }
 
         return filledSockets;
@@ -468,5 +472,157 @@ public class MCCube
         }
 
         #endregion
+        #region fill cell sockets 2
+
+        MCCell.MCValidConnection[] filledSockets2 = new MCCell.MCValidConnection[6];
+        // only fill if the tile exists
+        // cell 0
+        if (vertices[0].full)
+        {
+            //condition ? 12 : null;
+            filledSockets2[0] = vertices[1].full ? MCCell.MCValidConnection.Something : MCCell.MCValidConnection.Nothing;
+            filledSockets2[1] = vertices[3].full ? MCCell.MCValidConnection.Something : MCCell.MCValidConnection.Nothing;
+            filledSockets2[2] = vertices[0].full ? MCCell.MCValidConnection.Something : MCCell.MCValidConnection.Nothing;
+            filledSockets2[3] = vertices[0].full ? MCCell.MCValidConnection.Something : MCCell.MCValidConnection.Nothing;
+            filledSockets2[4] = vertices[4].full ? MCCell.MCValidConnection.Something : MCCell.MCValidConnection.Nothing;
+            filledSockets2[5] = vertices[0].full ? MCCell.MCValidConnection.Something : MCCell.MCValidConnection.Nothing;
+            filledSockets2 = MiddleAmmendments(filledSockets2, 0);
+            cells[0].SetValidConnections(filledSockets2);
+            filledSockets2 = new MCCell.MCValidConnection[6];
+        }
+        else
+        {
+            cells[0].SetValidConnections(new MCCell.MCValidConnection[6]);
+        }
+
+        // cell 1
+        if (vertices[1].full)
+        {
+            filledSockets2[0] = vertices[1].full ? MCCell.MCValidConnection.Something : MCCell.MCValidConnection.Nothing;
+            filledSockets2[1] = vertices[2].full ? MCCell.MCValidConnection.Something : MCCell.MCValidConnection.Nothing;
+            filledSockets2[2] = vertices[0].full ? MCCell.MCValidConnection.Something : MCCell.MCValidConnection.Nothing;
+            filledSockets2[3] = vertices[1].full ? MCCell.MCValidConnection.Something : MCCell.MCValidConnection.Nothing;
+            filledSockets2[4] = vertices[5].full ? MCCell.MCValidConnection.Something : MCCell.MCValidConnection.Nothing;
+            filledSockets2[5] = vertices[1].full ? MCCell.MCValidConnection.Something : MCCell.MCValidConnection.Nothing;
+            filledSockets2 = MiddleAmmendments(filledSockets2, 1);
+            cells[1].SetValidConnections(filledSockets2);
+            filledSockets2 = new MCCell.MCValidConnection[6];
+
+        }
+        else
+        {
+            cells[1].SetValidConnections(new MCCell.MCValidConnection[6]);
+        }
+
+        // cell 2
+        if (vertices[2].full)
+        {
+            filledSockets2[0] = vertices[2].full ? MCCell.MCValidConnection.Something : MCCell.MCValidConnection.Nothing;
+            filledSockets2[1] = vertices[2].full ? MCCell.MCValidConnection.Something : MCCell.MCValidConnection.Nothing;
+            filledSockets2[2] = vertices[3].full ? MCCell.MCValidConnection.Something : MCCell.MCValidConnection.Nothing;
+            filledSockets2[3] = vertices[1].full ? MCCell.MCValidConnection.Something : MCCell.MCValidConnection.Nothing;
+            filledSockets2[4] = vertices[6].full ? MCCell.MCValidConnection.Something : MCCell.MCValidConnection.Nothing;
+            filledSockets2[5] = vertices[2].full ? MCCell.MCValidConnection.Something : MCCell.MCValidConnection.Nothing;
+            filledSockets2 = MiddleAmmendments(filledSockets2, 2);
+            cells[2].SetValidConnections(filledSockets2);
+            filledSockets2 = new MCCell.MCValidConnection[6];
+        }
+        else
+        {
+            cells[2].SetValidConnections(new MCCell.MCValidConnection[6]);
+        }
+
+        // cell 3
+        if (vertices[3].full)
+        {
+            filledSockets2[0] = vertices[2].full ? MCCell.MCValidConnection.Something : MCCell.MCValidConnection.Nothing;
+            filledSockets2[1] = vertices[3].full ? MCCell.MCValidConnection.Something : MCCell.MCValidConnection.Nothing;
+            filledSockets2[2] = vertices[3].full ? MCCell.MCValidConnection.Something : MCCell.MCValidConnection.Nothing;
+            filledSockets2[3] = vertices[0].full ? MCCell.MCValidConnection.Something : MCCell.MCValidConnection.Nothing;
+            filledSockets2[4] = vertices[7].full ? MCCell.MCValidConnection.Something : MCCell.MCValidConnection.Nothing;
+            filledSockets2[5] = vertices[3].full ? MCCell.MCValidConnection.Something : MCCell.MCValidConnection.Nothing;
+            filledSockets2 = MiddleAmmendments(filledSockets2, 3);
+            cells[3].SetValidConnections(filledSockets2);
+            filledSockets2 = new MCCell.MCValidConnection[6];
+        }
+        else
+        {
+            cells[3].SetValidConnections(new MCCell.MCValidConnection[6]);
+        }
+
+        // cell 4
+        if (vertices[4].full)
+        {
+            filledSockets2[0] = vertices[5].full ? MCCell.MCValidConnection.Something : MCCell.MCValidConnection.Nothing;
+            filledSockets2[1] = vertices[7].full ? MCCell.MCValidConnection.Something : MCCell.MCValidConnection.Nothing;
+            filledSockets2[2] = vertices[4].full ? MCCell.MCValidConnection.Something : MCCell.MCValidConnection.Nothing;
+            filledSockets2[3] = vertices[4].full ? MCCell.MCValidConnection.Something : MCCell.MCValidConnection.Nothing;
+            filledSockets2[4] = vertices[4].full ? MCCell.MCValidConnection.Something : MCCell.MCValidConnection.Nothing;
+            filledSockets2[5] = vertices[0].full ? MCCell.MCValidConnection.Something : MCCell.MCValidConnection.Nothing;
+            filledSockets2 = MiddleAmmendments(filledSockets2, 4);
+            cells[4].SetValidConnections(filledSockets2);
+            filledSockets2 = new MCCell.MCValidConnection[6];
+        }
+        else
+        {
+            cells[4].SetValidConnections(new MCCell.MCValidConnection[6]);
+        }
+
+        // cell 5
+        if (vertices[5].full)
+        {
+            filledSockets2[0] = vertices[5].full ? MCCell.MCValidConnection.Something : MCCell.MCValidConnection.Nothing;
+            filledSockets2[1] = vertices[6].full ? MCCell.MCValidConnection.Something : MCCell.MCValidConnection.Nothing;
+            filledSockets2[2] = vertices[4].full ? MCCell.MCValidConnection.Something : MCCell.MCValidConnection.Nothing;
+            filledSockets2[3] = vertices[5].full ? MCCell.MCValidConnection.Something : MCCell.MCValidConnection.Nothing;
+            filledSockets2[4] = vertices[5].full ? MCCell.MCValidConnection.Something : MCCell.MCValidConnection.Nothing;
+            filledSockets2[5] = vertices[1].full ? MCCell.MCValidConnection.Something : MCCell.MCValidConnection.Nothing;
+            filledSockets2 = MiddleAmmendments(filledSockets2, 5);
+            cells[5].SetValidConnections(filledSockets2);
+            filledSockets2 = new MCCell.MCValidConnection[6];
+        }
+        else
+        {
+            cells[5].SetValidConnections(new MCCell.MCValidConnection[6]);
+        }
+
+        // cell 6
+        if (vertices[6].full)
+        {
+            filledSockets2[0] = vertices[6].full ? MCCell.MCValidConnection.Something : MCCell.MCValidConnection.Nothing;
+            filledSockets2[1] = vertices[6].full ? MCCell.MCValidConnection.Something : MCCell.MCValidConnection.Nothing;
+            filledSockets2[2] = vertices[7].full ? MCCell.MCValidConnection.Something : MCCell.MCValidConnection.Nothing;
+            filledSockets2[3] = vertices[5].full ? MCCell.MCValidConnection.Something : MCCell.MCValidConnection.Nothing;
+            filledSockets2[4] = vertices[6].full ? MCCell.MCValidConnection.Something : MCCell.MCValidConnection.Nothing;
+            filledSockets2[5] = vertices[2].full ? MCCell.MCValidConnection.Something : MCCell.MCValidConnection.Nothing;
+            filledSockets2 = MiddleAmmendments(filledSockets2, 6);
+            cells[6].SetValidConnections(filledSockets2);
+            filledSockets2 = new MCCell.MCValidConnection[6];
+        }
+        else
+        {
+            cells[6].SetValidConnections(new MCCell.MCValidConnection[6]);
+        }
+
+        // cell 7
+        if (vertices[7].full)
+        {
+            filledSockets2[0] = vertices[6].full ? MCCell.MCValidConnection.Something : MCCell.MCValidConnection.Nothing;
+            filledSockets2[1] = vertices[7].full ? MCCell.MCValidConnection.Something : MCCell.MCValidConnection.Nothing;
+            filledSockets2[2] = vertices[7].full ? MCCell.MCValidConnection.Something : MCCell.MCValidConnection.Nothing;
+            filledSockets2[3] = vertices[4].full ? MCCell.MCValidConnection.Something : MCCell.MCValidConnection.Nothing;
+            filledSockets2[4] = vertices[7].full ? MCCell.MCValidConnection.Something : MCCell.MCValidConnection.Nothing;
+            filledSockets2[5] = vertices[3].full ? MCCell.MCValidConnection.Something : MCCell.MCValidConnection.Nothing;
+            filledSockets2 = MiddleAmmendments(filledSockets2, 7);
+            cells[7].SetValidConnections(filledSockets2);
+            filledSockets2 = new MCCell.MCValidConnection[6];
+        }
+        else
+        {
+            cells[7].SetValidConnections(new MCCell.MCValidConnection[6]);
+        }
+
+        #endregion
+
     }
 }

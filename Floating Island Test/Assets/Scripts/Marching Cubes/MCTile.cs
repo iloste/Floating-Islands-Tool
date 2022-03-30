@@ -44,7 +44,7 @@ public class MCTile : ScriptableObject
     public Connection[] sockets;
     public GameObject prefab;
 
-    [HideInInspector] public List<List<MCTile>> possibleConnectors;
+    [HideInInspector] public List<List<MCTile>> possibleConnectors { get; set; }
     [HideInInspector] public List<List<MCTile>> immpossibleConnectors;
 
     public MCTile()

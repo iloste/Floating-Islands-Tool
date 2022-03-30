@@ -245,9 +245,16 @@ public class MCWFC : MonoBehaviour
 
         grid.CollapsePossibleTiles(coords);
         Propagate(coords);
+
+        while (!grid.GridCollapsed())
+        {
+            coords = grid.FindUncollapsedCell().coords;
+            grid.CollapsePossibleTiles(coords);
+            Propagate(coords);
+        }
+
         DisplayCubes();
     }
-
 
     private void Propagate(Vector3Int coords)
     {
@@ -259,71 +266,47 @@ public class MCWFC : MonoBehaviour
             // get current cell
             MCCell currentCell = q.Dequeue();
             // get current cell neighbours
-            MCCell[] neighbours = grid.GetNeighbouringCells(currentCell);
-
-            //for each neighbour
-
-            for (int direction = 0; direction < neighbours.Length; direction++)
+            if (currentCell != null)
             {
-                if (neighbours[direction] != null)
+                MCCell[] neighbours = grid.GetNeighbouringCells(currentCell);
+
+                //for each neighbour
+
+                for (int direction = 0; direction < neighbours.Length; direction++)
                 {
-                    bool changesMade = false;
-
-                    if (!neighbours[direction].Collapsed())
+                    if (neighbours[direction] != null)
                     {
-                        if (neighbours[direction].coords == new Vector3Int(2, 1, 3))
+                        bool changesMade = false;
+
+                        if (!neighbours[direction].Collapsed())
                         {
-
-                        }
-                        // remove neighbours possible tiles based on current cells tiles
-                        List<Connection> validConnections = currentCell.GetValidConnections(direction);
-                        List<MCTile> possibleNeighbourTiles = neighbours[direction].possibleTiles;
-                        int oppositeDirection = GetOppositeDirection(direction);
-
-                        // for each nighbour tile
-                        // if it's connection isn't in valid connections, remove it.
-                        for (int i = 0; i < possibleNeighbourTiles.Count; i++)
-                        {
-                            Connection nextConnection = possibleNeighbourTiles[i].sockets[oppositeDirection];
-
-                            if (!CheckSocketsMatch(nextConnection, validConnections))
+                            if (neighbours[direction].coords == new Vector3Int(2, 2, 2))
                             {
-                                possibleNeighbourTiles.RemoveAt(i);
-                                i--;
-                                changesMade = true;
+
+                            }
+                            // remove neighbours possible tiles based on current cells tiles
+                            List<Connection> validConnections = currentCell.GetValidConnections(direction);
+                            List<MCTile> possibleNeighbourTiles = neighbours[direction].possibleTiles;
+                            int oppositeDirection = GetOppositeDirection(direction);
+
+                            // for each nighbour tile
+                            // if it's connection isn't in valid connections, remove it.
+                            for (int i = 0; i < possibleNeighbourTiles.Count; i++)
+                            {
+                                Connection nextConnection = possibleNeighbourTiles[i].sockets[oppositeDirection];
+
+                                if (!CheckSocketsMatch(nextConnection, validConnections))
+                                {
+                                    possibleNeighbourTiles.RemoveAt(i);
+                                    i--;
+                                    changesMade = true;
+                                }
                             }
                         }
-                    }
 
-                    //if (!q.Contains( neighbours[direction]))
-                    //{
-                    //    if (!CellComplete(neighbours[direction]))
-                    //    {
-                    //        q.Enqueue(neighbours[direction]);
-                    //    }
-                    //}
-
-                    if (changesMade)
-                    {
-                        q.Enqueue(neighbours[direction]);
-                        neighbours[direction].visited = true;
-                    }
-                }
-            }
-
-            if (q.Count == 0)
-            {
-                if (!grid.GridCollapsed())
-                {
-                    MCCell nextCell = grid.FindUncollapsedCell();
-
-                    MCCell[] neighbours2 = grid.GetNeighbouringCells(nextCell);
-
-                    for (int x = 0; x < neighbours2.Length; x++)
-                    {
-                        if (neighbours2[x] != null)
+                        if (changesMade)
                         {
-                            q.Enqueue(neighbours2[x]);
+                            q.Enqueue(neighbours[direction]);
                         }
                     }
                 }
@@ -332,13 +315,102 @@ public class MCWFC : MonoBehaviour
     }
 
 
+    //private void Propagate(Vector3Int coords)
+    //{
+    //    Queue<MCCell> q = new Queue<MCCell>();
+    //    q.Enqueue(grid.GetCell(coords));
+
+    //    while (q.Count > 0)
+    //    {
+    //        // get current cell
+    //        MCCell currentCell = q.Dequeue();
+    //        // get current cell neighbours
+    //        if (currentCell != null)
+    //        {
+    //            MCCell[] neighbours = grid.GetNeighbouringCells(currentCell);
+
+    //            //for each neighbour
+
+    //            for (int direction = 0; direction < neighbours.Length; direction++)
+    //            {
+    //                if (neighbours[direction] != null)
+    //                {
+    //                    bool changesMade = false;
+
+    //                    if (!neighbours[direction].Collapsed())
+    //                    {
+    //                        if (neighbours[direction].coords == new Vector3Int(2, 2, 2))
+    //                        {
+
+    //                        }
+    //                        // remove neighbours possible tiles based on current cells tiles
+    //                        List<Connection> validConnections = currentCell.GetValidConnections(direction);
+    //                        List<MCTile> possibleNeighbourTiles = neighbours[direction].possibleTiles;
+    //                        int oppositeDirection = GetOppositeDirection(direction);
+
+    //                        // for each nighbour tile
+    //                        // if it's connection isn't in valid connections, remove it.
+    //                        for (int i = 0; i < possibleNeighbourTiles.Count; i++)
+    //                        {
+    //                            Connection nextConnection = possibleNeighbourTiles[i].sockets[oppositeDirection];
+
+    //                            if (!CheckSocketsMatch(nextConnection, validConnections))
+    //                            {
+    //                                possibleNeighbourTiles.RemoveAt(i);
+    //                                i--;
+    //                                changesMade = true;
+    //                            }
+    //                        }
+    //                    }
+
+    //                    //if (!q.Contains( neighbours[direction]))
+    //                    //{
+    //                    //    if (!CellComplete(neighbours[direction]))
+    //                    //    {
+    //                    //        q.Enqueue(neighbours[direction]);
+    //                    //    }
+    //                    //}
+
+    //                    if (changesMade)
+    //                    {
+    //                        q.Enqueue(neighbours[direction]);
+    //                        neighbours[direction].visited = true;
+    //                    }
+    //                }
+    //            } 
+    //        }
+
+    //        if (q.Count == 0)
+    //        {
+    //            if (!grid.GridCollapsed())
+    //            {
+    //                MCCell nextCell = grid.FindUncollapsedCell();
+
+    //                if (nextCell != null)
+    //                {
+    //                    MCCell[] neighbours2 = grid.GetNeighbouringCells(nextCell);
+
+    //                    for (int x = 0; x < neighbours2.Length; x++)
+    //                    {
+    //                        if (neighbours2[x] != null)
+    //                        {
+    //                            q.Enqueue(neighbours2[x]);
+    //                        }
+    //                    }
+    //                }
+    //            }
+    //        }
+    //    }
+    //}
+
+
     private bool CellComplete(MCCell cell)
     {
         MCCell[] neighbours = grid.GetNeighbouringCells(cell);
 
         for (int i = 0; i < neighbours.Length; i++)
         {
-            if (neighbours[i]!= null && !neighbours[i].Collapsed())
+            if (neighbours[i] != null && !neighbours[i].Collapsed())
             {
                 return false;
             }
