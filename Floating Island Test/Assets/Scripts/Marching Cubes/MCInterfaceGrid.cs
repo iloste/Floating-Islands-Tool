@@ -30,6 +30,7 @@ public class MCInterfaceGrid : MonoBehaviour
     {
         vertexGrid.ClearVertex(coords);
         cubeGrid.UpdateCubesCells();
+        cellGrid.ResetPossibilitySpace();
     }
 
 
