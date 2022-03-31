@@ -26,6 +26,19 @@ Material:
     m_Floats:
     - _Glossiness: 0.5
     - _Metallic: 0
+    - _SkyExponent1: 8.5
+    - _SkyExponent2: 3
+    - _SkyIntensity: 1
+    - _SunAlpha: 550
+    - _SunAltitude: 38
+    - _SunAzimuth: 20
+    - _SunBeta: 1
+    - _SunIntensity: 2
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _SkyColor1: {r: 0, g: 0.44705883, b: 0.627451, a: 0}
+    - _SkyColor2: {r: 0.16189034, g: 0.6190308, b: 0.8018868, a: 0}
+    - _SkyColor3: {r: 0.4509804, g: 0.84313726, b: 1, a: 0}
+    - _SunColor: {r: 1, g: 0.98999995, b: 0.87, a: 1}
+    - _SunVector: {r: 0.269, g: 0.615, b: 0.74, a: 0}
   m_BuildTextureStacks: []
