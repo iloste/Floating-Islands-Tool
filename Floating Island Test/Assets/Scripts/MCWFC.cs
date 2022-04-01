@@ -323,21 +323,7 @@ public class MCWFC : MonoBehaviour
 
    
 
-    /// <summary>
-    /// returns true if connection a fits anything in list b
-    /// </summary>
-    private bool CheckSocketsMatch(Connection a, List<Connection> b)
-    {
-        for (int i = 0; i < b.Count; i++)
-        {
-            if (a == b[i])
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
+   
 
 
     #endregion
@@ -355,7 +341,7 @@ public class MCWFC : MonoBehaviour
     {
         // debug purposes
         // to do: remove this when the grid doesn't start at 0 on the y
-        coords += Vector3Int.up;
+       // coords += Vector3Int.up;
 
         grid.FillVertex(coords);
         Iterate(coords);
@@ -370,7 +356,7 @@ public class MCWFC : MonoBehaviour
     {
         // debug purposes
         // to do: remove this when the grid doesn't start at 0 on the y
-        coords += Vector3Int.up;
+       // coords += Vector3Int.up;
         grid.ClearVertex(coords);
 
         Iterate(coords);
@@ -378,7 +364,21 @@ public class MCWFC : MonoBehaviour
     }
 
 
+    /// <summary>
+    /// returns true if connection a fits anything in list b
+    /// </summary>
+    private bool CheckSocketsMatch(Connection a, List<Connection> b)
+    {
+        for (int i = 0; i < b.Count; i++)
+        {
+            if (a == b[i])
+            {
+                return true;
+            }
+        }
 
+        return false;
+    }
 
     private void DisplayCubes()
     {

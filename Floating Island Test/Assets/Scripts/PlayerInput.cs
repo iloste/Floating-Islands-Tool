@@ -91,7 +91,9 @@ public class PlayerInput : MonoBehaviour
     private void GetWorldPositions()
     {
         worldPosRaw = new Vector3();
-        Plane plane = new Plane(Vector3.up, 0);
+        // -1 so the plane starts at y == 1 (positive 1 would make y == -1)
+        Plane plane = new Plane(Vector3.up, -1);
+        
         float distance;
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
@@ -109,6 +111,7 @@ public class PlayerInput : MonoBehaviour
             if (plane.Raycast(ray, out distance))
             {
                 worldPosRaw = ray.GetPoint(distance);
+               
                 //Debug.Log("plane position: " + worldPosRaw);
             }
         }

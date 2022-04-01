@@ -37,7 +37,7 @@ public class MCVertexGrid
                     // place icosphere in vertex's place for debug purposes
                     grid[x, y, z].vertexGO = GameObject.Instantiate(debugVertexPrefab, new Vector3(x, y, z), Quaternion.identity, debugParent.transform);
                     grid[x, y, z].vertexGO.name = "" + x + ", " + y + ", " + z;
-                    grid[x, y, z].vertexGO.transform.position += new Vector3(-.1f, 0, -0);
+                    grid[x, y, z].vertexGO.transform.position += new Vector3(0, -.1f, 0);
                     grid[x, y, z].vertexGO.transform.GetComponent<Renderer>().material.color = Color.red;
                 }
             }

@@ -300,17 +300,47 @@ public class MCCube
 
     private MCCell.MCValidConnection[] MiddleAmmendments(MCCell.MCValidConnection[] filledSockets, int pos)
     {
+        if (vertices[1].full && vertices[2].full && vertices[5].full && vertices[6].full)
+        {
+            filledSockets[0] = MCCell.MCValidConnection.Middle;
+        }
+
+        if (vertices[2].full && vertices[3].full && vertices[6].full && vertices[7].full)
+        {
+            filledSockets[1] = MCCell.MCValidConnection.Middle;
+        }
+
+        if (vertices[0].full && vertices[3].full && vertices[4].full && vertices[7].full)
+        {
+            filledSockets[2] = MCCell.MCValidConnection.Middle;
+        }
+
+        if (vertices[0].full && vertices[1].full && vertices[4].full && vertices[5].full)
+        {
+            filledSockets[3] = MCCell.MCValidConnection.Middle;
+        }
+
         if (vertices[0].full && vertices[1].full && vertices[2].full && vertices[3].full)
         {
-            filledSockets[4] = MCCell.MCValidConnection.Nothing;
+           // filledSockets[4] = MCCell.MCValidConnection.Nothing;
             filledSockets[5] = MCCell.MCValidConnection.Middle;
         }
 
         if (vertices[4].full && vertices[5].full && vertices[6].full && vertices[7].full)
         {
             filledSockets[4] = MCCell.MCValidConnection.Middle;
-            filledSockets[5] = MCCell.MCValidConnection.Nothing;
+           // filledSockets[5] = MCCell.MCValidConnection.Nothing;
         }
+
+        //if (vertices[0].full && vertices[1].full && vertices[2].full && vertices[3].full && vertices[4].full && vertices[5].full && vertices[6].full && vertices[7].full)
+        //{
+        //    filledSockets[0] = MCCell.MCValidConnection.Middle;
+        //    filledSockets[1] = MCCell.MCValidConnection.Middle;
+        //    filledSockets[2] = MCCell.MCValidConnection.Middle;
+        //    filledSockets[3] = MCCell.MCValidConnection.Middle;
+        //    filledSockets[4] = MCCell.MCValidConnection.Middle;
+        //    filledSockets[5] = MCCell.MCValidConnection.Middle;
+        //}
 
         return filledSockets;
     }
