@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1249078402956249534}
   - component: {fileID: 5154235377381803101}
   m_Layer: 0
-  m_Name: Middle Top
+  m_Name: Middle Top 2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -44,7 +44,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6766c857e8e2df44bae2a436fb385d38, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tile: {fileID: 11400000, guid: 45e8b04b68897ce4e8014bf42d6ab4d9, type: 2}
+  tile: {fileID: 11400000, guid: 3fbfd7c6ac20a8046b97afe6a14e9118, type: 2}
 --- !u!1001 &5850212784115086451
 PrefabInstance:
   m_ObjectHideFlags: 0
