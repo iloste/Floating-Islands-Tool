@@ -76,6 +76,10 @@ public class MCCubeGrid
             {
                 for (int z = 0; z < gridSize.z; z++)
                 {
+                    if (x == 1 && y ==1 && z == 1)
+                    {
+
+                    }
                     grid[x, y, z].UpdateCubesCells();
                 }
             }

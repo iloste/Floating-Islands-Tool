@@ -280,10 +280,29 @@ public class MCWFC : MonoBehaviour
 
                         if (!neighbours[direction].Collapsed())
                         {
-                            if (neighbours[direction].coords == new Vector3Int(2, 2, 2))
+                            if (neighbours[direction].coords == new Vector3Int(2, 2, 3) ||
+                                neighbours[direction].coords == new Vector3Int(2, 2, 4) ||
+                                neighbours[direction].coords == new Vector3Int(2, 2, 5) ||
+                                neighbours[direction].coords == new Vector3Int(3, 2, 5) ||
+                                neighbours[direction].coords == new Vector3Int(4, 2, 5) ||
+                                neighbours[direction].coords == new Vector3Int(5, 2, 5) ||
+                                neighbours[direction].coords == new Vector3Int(5, 2, 4) ||
+                                neighbours[direction].coords == new Vector3Int(5, 2, 3) ||
+                                neighbours[direction].coords == new Vector3Int(5, 2, 2) ||
+                                neighbours[direction].coords == new Vector3Int(4, 2, 2) ||
+                                neighbours[direction].coords == new Vector3Int(3, 2, 2) ||
+                                neighbours[direction].coords == new Vector3Int(4, 2, 3) ||
+                                neighbours[direction].coords == new Vector3Int(3, 2, 4) ||
+                                neighbours[direction].coords == new Vector3Int(4, 2, 4)
+                                )
                             {
 
                             }
+                            if (neighbours[direction].coords == new Vector3Int(3, 2, 2))
+                            {
+
+                            }
+
                             // remove neighbours possible tiles based on current cells tiles
                             List<Connection> validConnections = currentCell.GetValidConnections(direction);
                             List<MCTile> possibleNeighbourTiles = neighbours[direction].possibleTiles;
@@ -297,7 +316,8 @@ public class MCWFC : MonoBehaviour
 
                                 if (!CheckSocketsMatch(nextConnection, validConnections))
                                 {
-                                    possibleNeighbourTiles.RemoveAt(i);
+                                    neighbours[direction].RemovePossibleTile(i);
+                                    // possibleNeighbourTiles.RemoveAt(i);
                                     i--;
                                     changesMade = true;
                                 }
@@ -315,15 +335,15 @@ public class MCWFC : MonoBehaviour
     }
 
 
-    
 
 
-   
 
 
-   
 
-   
+
+
+
+
 
 
     #endregion
@@ -341,7 +361,7 @@ public class MCWFC : MonoBehaviour
     {
         // debug purposes
         // to do: remove this when the grid doesn't start at 0 on the y
-       // coords += Vector3Int.up;
+        // coords += Vector3Int.up;
 
         grid.FillVertex(coords);
         Iterate(coords);
@@ -356,7 +376,7 @@ public class MCWFC : MonoBehaviour
     {
         // debug purposes
         // to do: remove this when the grid doesn't start at 0 on the y
-       // coords += Vector3Int.up;
+        // coords += Vector3Int.up;
         grid.ClearVertex(coords);
 
         Iterate(coords);

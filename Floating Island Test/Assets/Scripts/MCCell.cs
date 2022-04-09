@@ -17,7 +17,7 @@ public class MCCell
     public Connection[] connections;
 
     private List<MCTile> allTiles;
-    public List<MCTile> possibleTiles;
+    public List<MCTile> possibleTiles { get; private set; }
     public Vector3Int coords;
     public Vector3 worldPosition;
     public GameObject debugGO;
@@ -66,6 +66,10 @@ public class MCCell
     {
         if (possibleTiles.Count > 1)
         {
+            if (possibleTiles.Count == 0)
+            {
+                Debug.LogError("Cell " + coords + " has no possible tiles. Valid Connections: " + validConnections2[0] + " " + validConnections2[1] + " " + validConnections2[2] + " " + validConnections2[3] + " " + validConnections2[4] + " " + validConnections2[5]);
+            }
             return false;
         }
 
@@ -103,6 +107,20 @@ public class MCCell
         {
             possibleTiles.RemoveAt(index);
         }
+
+        for (int i = 0; i < validConnections.Length; i++)
+        {
+            if (validConnections[i] == true)
+            {
+                if (possibleTiles.Count == 0)
+                {
+                    Debug.LogError("Cell " + coords + " has no possible tiles. Valid Connections: " + validConnections2[0] +" "+ validConnections2[1] +" "+ validConnections2[2] +" "+ validConnections2[3] +" "+ validConnections2[4] +" "+ validConnections2[5]);
+                }
+                break;
+            }
+        }
+
+
     }
 
 
@@ -130,7 +148,9 @@ public class MCCell
 
                     if (!CheckSocketsMatch(nextConnection, neighboursValidConnections))
                     {
-                        possibleTiles.RemoveAt(i);
+                        // possibleTiles.RemoveAt(i);
+                        // i--;
+                        RemovePossibleTile(i);
                         i--;
                     }
                 }
@@ -142,7 +162,8 @@ public class MCCell
             // picks a tile at random
             int random = Random.Range(0, possibleTiles.Count);
             MCTile chosen = possibleTiles[random];
-            possibleTiles.RemoveAt(random);
+            RemovePossibleTile(random);
+            //possibleTiles.RemoveAt(random);
 
             // stores the chosen tile in possible tiles
             possibleTiles = new List<MCTile>();
@@ -176,13 +197,18 @@ public class MCCell
     /// </summary>
     private void RemoveTilesThatDontFit()
     {
+        if (coords == new Vector3Int(3, 2, 3))
+        {
+
+        }
         for (int i = 0; i < possibleTiles.Count; i++)
         {
             //if (!TileFitsValidConnections(possibleTiles[i]))
             if (!TileFitsValidConnections2(possibleTiles[i]))
             {
                 // impossibleTiles.Add(possibleTiles[i]);
-                possibleTiles.RemoveAt(i);
+                //possibleTiles.RemoveAt(i);
+                RemovePossibleTile(i);
                 i--;
             }
         }

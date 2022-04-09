@@ -45,6 +45,8 @@ public class MCCube
     {
         Vector3 offset;
 
+        //return Vector3.zero;
+
         switch (vertexPos)
         {
             case 0:
@@ -125,6 +127,10 @@ public class MCCube
 
         for (int i = 0; i < cells.Length; i++)
         {
+            if (cells[i].coords == new Vector3Int(3, 2, 2))
+            {
+
+            }
             if (cells[i].TileExists)
             {
                 if (cells[i].possibleTiles.Count > 0)
@@ -133,7 +139,7 @@ public class MCCube
 
                     GOs[i] = GameObject.Instantiate(cells[i].possibleTiles[0].prefab, new Vector3(vertices[i].coords.x, vertices[i].coords.y, vertices[i].coords.z) + offset, Quaternion.identity);
                     GOs[i].transform.eulerAngles = new Vector3(0, 90 * cells[i].possibleTiles[0].rotationIndex, 0);
-                    GOs[i].name = cells[i].possibleTiles[0].name;
+                    GOs[i].name = cells[i].possibleTiles[0].name + cells[i].coords;
                 }// GOs[i].name = tiles[i].tileType.ToString();
             }
         }
@@ -349,6 +355,16 @@ public class MCCube
     private void FillCellSockets()
     {
         bool[] filledSockets = new bool[6];
+
+        for (int i = 0; i < cells.Length; i++)
+        {
+            if (cells[i].coords == new Vector3Int(3, 2, 2))
+            {
+
+            }
+        }
+
+
 
         // represents the neighbours available to each cell. 
         // filledsockets is N/E/S/W/U/D.

@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 023e6d5d95a26b14fb9f14b1fb2fbc22, type: 3}
+  m_Name: Corner Bottom Interior E
+  m_EditorClassIdentifier: 
+  rotationIndex: 0
+  tileType: 0
+  sockets:
+  - number: -1
+    spConnection: 0
+  - number: -1
+    spConnection: 0
+  - number: 14
+    spConnection: 1
+  - number: 14
+    spConnection: 0
+  - number: 15
+    spConnection: 3
+  - number: 99
+    spConnection: 0
+  prefab: {fileID: 1351852757358360948, guid: 16657c766b62f7f4db1dbfae5e022a13, type: 3}
