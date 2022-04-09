@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
-public class Test : MonoBehaviour
+public class DisplaySocketsInScene : MonoBehaviour
 {
     [SerializeField] MCTile tile;
 
